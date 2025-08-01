@@ -1,0 +1,54 @@
+import { ApiResponse, LoginCredentials, User } from '@/types';
+import { apiClient } from './apiClient';
+import { API_ENDPOINTS } from '@/config/api';
+
+export interface AuthResponse {
+  user: User;
+  token: string;
+  refreshToken: string;
+}
+
+class AuthService {
+  async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
+    try {
+      const response = await apiClient.post<AuthResponse>(
+        API_ENDPOINTS.AUTH.LOGIN,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async logout(): Promise<ApiResponse> {
+    try {
+      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async refreshToken(): Promise<ApiResponse<AuthResponse>> {
+    try {
+      const response = await apiClient.post<AuthResponse>(
+        API_ENDPOINTS.AUTH.REFRESH
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getProfile(): Promise<ApiResponse<User>> {
+    try {
+      const response = await apiClient.get<User>(API_ENDPOINTS.AUTH.PROFILE);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+export const authService = new AuthService();
