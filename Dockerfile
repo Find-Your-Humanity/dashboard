@@ -1,5 +1,5 @@
-# Build stage
-FROM node:18-alpine as build
+# Production stage
+FROM nginx:alpine
 
 WORKDIR /app
 
