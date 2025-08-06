@@ -1,6 +1,6 @@
-import { ApiResponse, LoginCredentials, User } from '@/types';
+import { ApiResponse, LoginCredentials, User } from '../types';
 import { apiClient } from './apiClient';
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 export interface AuthResponse {
   user: User;

@@ -18,7 +18,7 @@ import {
   Security as SecurityIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { APP_CONFIG } from '@/config/constants';
+import { APP_CONFIG } from '../../config/constants';
 
 interface SidebarProps {
   onItemClick?: () => void;

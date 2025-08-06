@@ -15,8 +15,8 @@ import {
   AccountCircle as AccountIcon,
 } from '@mui/icons-material';
 import Sidebar from './Sidebar';
-import { useAuth } from '@/contexts/AuthContext';
-import { APP_CONFIG } from '@/config/constants';
+import { useAuth } from '../../contexts/AuthContext';
+import { APP_CONFIG } from '../../config/constants';
 
 interface LayoutProps {
   children: React.ReactNode;

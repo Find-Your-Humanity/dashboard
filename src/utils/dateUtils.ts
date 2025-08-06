@@ -1,4 +1,4 @@
-import { DATE_FORMATS } from '@/config/constants';
+import { DATE_FORMATS } from '../config/constants';
 
 /**
  * 날짜 및 시간 처리 유틸리티 함수들

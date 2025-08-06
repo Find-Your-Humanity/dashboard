@@ -1,6 +1,6 @@
-import { ApiResponse, DashboardAnalytics, CaptchaStats } from '@/types';
+import { ApiResponse, DashboardAnalytics, CaptchaStats } from '../types';
 import { apiClient } from './apiClient';
-import { API_ENDPOINTS } from '@/config/api';
+import { API_ENDPOINTS } from '../config/api';
 
 class DashboardService {
   async getAnalytics(): Promise<ApiResponse<DashboardAnalytics>> {

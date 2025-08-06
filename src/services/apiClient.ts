@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_CONFIG, HTTP_STATUS } from '@/config/api';
-import { STORAGE_KEYS } from '@/config/constants';
-import { ApiResponse, ApiErrorResponse } from '@/types';
+import { API_CONFIG, HTTP_STATUS } from '../config/api';
+import { STORAGE_KEYS } from '../config/constants';
+import { ApiResponse } from '../types';
 
 class ApiClient {
   private client: AxiosInstance;
