@@ -1,4 +1,3 @@
-@@ -1,180 +0,0 @@
 # Real Captcha Dashboard
 
 Real Captcha 서비스 관리를 위한 React 기반 대시보드 애플리케이션입니다.
