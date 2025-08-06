@@ -1,0 +1,168 @@
+name: CI/CD Pipeline for Dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout application code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev
+          username: ${{ secrets.ACCESS_KEY }}
+          password: ${{ secrets.ACCESS_SECRET_KEY }}
+
+      - name: Build and push Docker image
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/dashboard:${{ github.sha }}
+            ${{ secrets.PROJECT_NAME }}.kr-central-2.kcr.dev/${{ secrets.REPOSITORY_NAME }}/dashboard:latest
+
+      - name: Checkout Kubernetes manifests repository
+        uses: actions/checkout@v4
+        with:
+          repository: Find-Your-Humanity/deploy-manifests
+          path: deploy-manifests
+          token: ${{ secrets.PAT }}
+
+      - name: Create deployment file
+        run: |
+          IMAGE_TAG="${{ github.sha }}"
+          
+          # dashboard 폴더 생성
+          mkdir -p dashboard
+          
+          # deployment 파일 생성
+          cat > dashboard/deployment-dashboard.yaml << 'EOF'
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dashboard
+            namespace: captcha
+            labels:
+              app: dashboard
+          spec:
+            replicas: 2
+            selector:
+              matchLabels:
+                app: dashboard
+            template:
+              metadata:
+                labels:
+                  app: dashboard
+              spec:
+                nodeSelector:
+                  pool-name: platform-pool
+                containers:
+                  - name: dashboard
+                    image: kc-sfacspace.kr-central-2.kcr.dev/team1-repo/dashboard:IMAGE_TAG_PLACEHOLDER
+                    ports:
+                      - containerPort: 80
+                    env:
+                      - name: REACT_APP_API_URL
+                        value: "http://captcha-api-backend-service.captcha.svc.cluster.local"
+                    resources:
+                      requests:
+                        memory: "128Mi"
+                        cpu: "100m"
+                      limits:
+                        memory: "256Mi"
+                        cpu: "200m"
+                    livenessProbe:
+                      httpGet:
+                        path: /
+                        port: 80
+                      initialDelaySeconds: 30
+                      periodSeconds: 10
+                    readinessProbe:
+                      httpGet:
+                        path: /
+                        port: 80
+                      initialDelaySeconds: 5
+                      periodSeconds: 5
+                imagePullSecrets:
+                  - name: kcr-pull-secret
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: dashboard-service
+            namespace: captcha
+            labels:
+              app: dashboard
+          spec:
+            selector:
+              app: dashboard
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 80
+            type: ClusterIP
+          ---
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: dashboard-ingress
+            namespace: captcha
+            annotations:
+              nginx.ingress.kubernetes.io/rewrite-target: /
+              nginx.ingress.kubernetes.io/ssl-redirect: "false"
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+          spec:
+            ingressClassName: nginx
+            tls:
+              - hosts:
+                  - dashboard.realcatcha.com
+                secretName: dashboard-tls
+            rules:
+              - host: dashboard.realcatcha.com
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: dashboard-service
+                          port:
+                            number: 80
+          EOF
+          
+          # 이미지 태그 교체
+          sed -i "s/IMAGE_TAG_PLACEHOLDER/$IMAGE_TAG/g" dashboard/deployment-dashboard.yaml
+        working-directory: ./deploy-manifests
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dashboard/deployment-dashboard.yaml
+          git commit -m "Update dashboard image to ${{ github.sha }}" || echo "No changes to commit"
+          git push
+        working-directory: ./deploy-manifests 
