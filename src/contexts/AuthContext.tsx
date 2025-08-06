@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { AuthState, User, LoginCredentials } from '@/types';
-import { authService } from '@/services/authService';
-import { STORAGE_KEYS } from '@/config/constants';
+import { AuthState, User, LoginCredentials } from '../types';
+import { authService } from '../services/authService';
+import { STORAGE_KEYS } from '../config/constants';
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<boolean>;
