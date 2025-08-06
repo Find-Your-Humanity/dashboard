@@ -143,7 +143,7 @@ const DashboardScreen: React.FC = () => {
                 label="정상 운영"
                 color="success"
                 variant="outlined"
-                icon={<CheckCircle />}
+                icon={<SuccessIcon />}
               />
             </Box>
           </CardContent>
