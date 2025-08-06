@@ -9,7 +9,7 @@ import theme from './styles/theme';
 import { AuthProvider } from './contexts/AuthContext';
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById('root')
 );
 
 root.render(
@@ -23,4 +23,4 @@ root.render(
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
-);
+); 
