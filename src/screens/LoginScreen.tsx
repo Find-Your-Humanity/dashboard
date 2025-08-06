@@ -14,9 +14,9 @@ import {
   VisibilityOff,
   Security as SecurityIcon,
 } from '@mui/icons-material';
-import { useAuth } from '@/contexts/AuthContext';
-import { APP_CONFIG } from '@/config/constants';
-import { LoginCredentials } from '@/types';
+import { useAuth } from '../contexts/AuthContext';
+import { APP_CONFIG } from '../config/constants';
+import { LoginCredentials } from '../types';
 
 const LoginScreen: React.FC = () => {
   const [credentials, setCredentials] = useState<LoginCredentials>({
