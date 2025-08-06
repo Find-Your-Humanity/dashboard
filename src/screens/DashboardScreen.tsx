@@ -19,9 +19,9 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { dashboardService } from '@/services/dashboardService';
-import { DashboardAnalytics, CaptchaStats } from '@/types';
-import { formatNumber, formatPercentage, formatResponseTime } from '@/utils';
+import { dashboardService } from '../services/dashboardService';
+import { DashboardAnalytics, CaptchaStats } from '../types';
+import { formatNumber, formatPercentage, formatResponseTime } from '../utils';
 
 const DashboardScreen: React.FC = () => {
   const [analytics, setAnalytics] = useState<DashboardAnalytics | null>(null);

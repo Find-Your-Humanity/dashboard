@@ -23,7 +23,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { formatNumber, formatPercentage } from '@/utils';
+import { formatNumber, formatPercentage } from '../utils';
 
 const AnalyticsScreen: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('7days');

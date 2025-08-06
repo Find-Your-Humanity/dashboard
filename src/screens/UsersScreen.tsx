@@ -23,8 +23,8 @@ import {
   Delete as DeleteIcon,
   PersonAdd as PersonAddIcon,
 } from '@mui/icons-material';
-import { formatDate, maskEmail } from '@/utils';
-import { User } from '@/types';
+import { formatDate, maskEmail } from '../utils';
+import { User } from '../types';
 
 const UsersScreen: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
