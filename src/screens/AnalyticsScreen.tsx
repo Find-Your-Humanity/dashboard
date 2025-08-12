@@ -65,7 +65,7 @@ const AnalyticsScreen: React.FC = () => {
             분석
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            캐트차 서비스 사용 패턴 및 성능 분석
+            캡차 서비스 사용 패턴 및 성능 분석
           </Typography>
         </Box>
         <FormControl sx={{ minWidth: 150 }}>
@@ -106,12 +106,12 @@ const AnalyticsScreen: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* 캐트차 유형별 비율 */}
+        {/* 캡차 유형별 비율 */}
         <Grid item xs={12} lg={4}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                캐트차 유형별 사용 비율
+                캡차 유형별 사용 비율
               </Typography>
               <Box sx={{ height: 300, mt: 2 }}>
                 <ResponsiveContainer width="100%" height="100%">

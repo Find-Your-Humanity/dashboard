@@ -20,7 +20,7 @@ import {
 
 const SettingsScreen: React.FC = () => {
   const [settings, setSettings] = useState({
-    // 캐트차 설정
+    // 캡차 설정
     imageRecognitionEnabled: true,
     handwritingRecognitionEnabled: true,
     emotionRecognitionEnabled: false,
@@ -96,7 +96,7 @@ const SettingsScreen: React.FC = () => {
             설정
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            캐트차 서비스 및 시스템 설정 관리
+            캡차 서비스 및 시스템 설정 관리
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -131,12 +131,12 @@ const SettingsScreen: React.FC = () => {
       )}
 
       <Grid container spacing={3}>
-        {/* 캐트차 설정 */}
+        {/* 캡차 설정 */}
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                캐트차 설정
+                캡차 설정
               </Typography>
               
               <FormControlLabel
@@ -146,7 +146,7 @@ const SettingsScreen: React.FC = () => {
                     onChange={(e) => handleSettingChange('imageRecognitionEnabled', e.target.checked)}
                   />
                 }
-                label="이미지 인식 캐트차"
+                label="이미지 인식 캡차"
                 sx={{ display: 'block', mb: 2 }}
               />
               
@@ -157,7 +157,7 @@ const SettingsScreen: React.FC = () => {
                     onChange={(e) => handleSettingChange('handwritingRecognitionEnabled', e.target.checked)}
                   />
                 }
-                label="필기 인식 캐트차"
+                label="필기 인식 캡차"
                 sx={{ display: 'block', mb: 2 }}
               />
               
@@ -168,7 +168,7 @@ const SettingsScreen: React.FC = () => {
                     onChange={(e) => handleSettingChange('emotionRecognitionEnabled', e.target.checked)}
                   />
                 }
-                label="감정 인식 캐트차"
+                label="감정 인식 캡차"
                 sx={{ display: 'block', mb: 3 }}
               />
               
