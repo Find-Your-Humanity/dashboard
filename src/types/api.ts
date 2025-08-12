@@ -14,8 +14,8 @@ export interface ApiEndpoints {
   users: {
     list: '/api/users';
     create: '/api/users';
-    update: (id: string) => `/api/users/${id}`;
-    delete: (id: string) => `/api/users/${id}`;
+    update: (id: string) => string;
+    delete: (id: string) => string;
   };
   captcha: {
     logs: '/api/captcha/logs';
