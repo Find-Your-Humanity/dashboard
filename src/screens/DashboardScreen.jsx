@@ -20,16 +20,28 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ErrorStatsTable from '../components/Tables/ErrorStatsTable';
 import EndpointUsageTable from '../components/Tables/EndpointUsageTable';
+import { dashboardService } from '../services/dashboardService';
 
 const DashboardScreen = () => {
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
+  const [errorStats, setErrorStats] = useState([]);
+  const [endpointUsage, setEndpointUsage] = useState([]);
+
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      // API 호출 로직 (현재는 Mock 데이터 사용)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // 요약/차트
+      await dashboardService.getAnalytics().catch(() => null);
+      await dashboardService.getStats('daily').catch(() => null);
+      // 엔드포인트 사용량
+      dashboardService.getCaptchaPerformance()
+        .then((res) => {
+          if (res.success) setEndpointUsage(res.data);
+        })
+        .catch(() => {});
+      // 에러 집계는 추후 백엔드 추가 시 연동
       setLastUpdated(new Date());
     } catch (error) {
       console.error('대시보드 데이터 로드 실패:', error);
@@ -287,7 +299,7 @@ const DashboardScreen = () => {
               <Typography variant="h6" gutterBottom>
                 엔드포인트별 사용량 (일별)
               </Typography>
-              <EndpointUsageTable rows={mockEndpointUsage} />
+              <EndpointUsageTable rows={endpointUsage.length ? endpointUsage : mockEndpointUsage} />
             </CardContent>
           </Card>
         </Grid>

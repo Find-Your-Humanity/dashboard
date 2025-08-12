@@ -45,19 +45,16 @@ class ApiClient {
           originalRequest._retry = true;
 
           try {
-            // 토큰 갱신 시도
             const refreshToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
             if (refreshToken) {
-              const response = await this.client.post('/api/auth/refresh', {
-                token: refreshToken
-              });
-              
-              const newToken = response.data.data.token;
-              localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken);
-              
-              // 원래 요청 재시도
-              originalRequest.headers.Authorization = `Bearer ${newToken}`;
-              return this.client(originalRequest);
+              const response = await this.client.post('/api/auth/refresh');
+              // 백엔드 응답: { access_token, token_type }
+              const newToken = response.data?.access_token || response.data?.data?.access_token;
+              if (newToken) {
+                localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newToken);
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                return this.client(originalRequest);
+              }
             }
           } catch (refreshError) {
             // 토큰 갱신 실패 시 로그아웃
