@@ -65,15 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       {/* 로고 영역 */}
       <Toolbar>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SecurityIcon sx={{ color: 'primary.main' }} />
-          <Typography
-            variant="h6"
-            noWrap
-            sx={{
-              fontWeight: 'bold',
-              color: 'primary.main',
-            }}
-          >
+          <SecurityIcon sx={{ color: 'secondary.main' }} />
+          <Typography variant="h6" noWrap sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
             {APP_CONFIG.NAME.split(' ')[0]}
           </Typography>
         </Box>
@@ -88,25 +81,25 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           
           return (
             <ListItem key={item.id} disablePadding>
-              <ListItemButton
+                <ListItemButton
                 onClick={() => handleItemClick(item.path)}
                 selected={isActive}
                 sx={{
-                  mx: 1,
+                    mx: 1,
                   mb: 0.5,
                   borderRadius: 1,
                   '&.Mui-selected': {
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
+                      bgcolor: 'rgba(108,92,231,0.25)',
+                      color: 'secondary.main',
                     '&:hover': {
-                      bgcolor: 'primary.dark',
+                        bgcolor: 'rgba(108,92,231,0.35)',
                     },
                     '& .MuiListItemIcon-root': {
-                      color: 'primary.contrastText',
+                        color: 'secondary.main',
                     },
                   },
                   '&:hover': {
-                    bgcolor: isActive ? 'primary.main' : 'action.hover',
+                      bgcolor: isActive ? 'rgba(108,92,231,0.3)' : 'rgba(255,255,255,0.04)',
                   },
                 }}
               >

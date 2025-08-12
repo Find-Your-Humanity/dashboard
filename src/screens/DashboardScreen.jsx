@@ -146,11 +146,11 @@ const DashboardScreen = () => {
       {/* 헤더 */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
-          <Typography variant="h4" component="h1" gutterBottom>
-            대시보드
+          <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 800 }}>
+            RealCatcha Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Real Captcha 서비스 모니터링 및 관리
+            캡차 서비스 실시간 지표와 운영 현황
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
