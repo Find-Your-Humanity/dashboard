@@ -22,8 +22,8 @@ export const API_ENDPOINTS = {
   USERS: {
     LIST: '/api/users',
     CREATE: '/api/users',
-    UPDATE: (id: string) => `/api/users/${id}`,
-    DELETE: (id: string) => `/api/users/${id}`,
+    UPDATE: (id) => `/api/users/${id}`,
+    DELETE: (id) => `/api/users/${id}`,
   },
   CAPTCHA: {
     LOGS: '/api/captcha/logs',
