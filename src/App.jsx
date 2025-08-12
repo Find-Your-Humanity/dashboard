@@ -6,16 +6,10 @@ import DashboardScreen from './screens/DashboardScreen';
 import AnalyticsScreen from './screens/AnalyticsScreen';
 import UsersScreen from './screens/UsersScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import LoginScreen from './screens/LoginScreen';
-import { useAuth } from './contexts/AuthContext';
 import './styles/App.css';
 
 function App() {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <LoginScreen />;
-  }
+  // 로그인 관련 로직 제거: 항상 대시보드 접근 허용
 
   return (
     <Box className="App">
