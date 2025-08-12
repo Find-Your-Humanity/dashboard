@@ -81,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       
       <Divider />
       
-      {/* 낤비게이션 메뉴 */}
+      {/* 네비게이션 메뉴 */}
       <List>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;

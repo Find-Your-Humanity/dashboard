@@ -18,6 +18,8 @@ import {
   Error as ErrorIcon,
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import ErrorStatsTable from '../components/Tables/ErrorStatsTable';
+import EndpointUsageTable from '../components/Tables/EndpointUsageTable';
 
 const DashboardScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -59,6 +61,27 @@ const DashboardScreen = () => {
     { time: '12:00', requests: 125, success: 118 },
     { time: '16:00', requests: 156, success: 148 },
     { time: '20:00', requests: 89, success: 84 },
+  ];
+
+  // Mock: 에러 코드 집계
+  const mockErrorStats = [
+    { status_code: 200, count: 120430 },
+    { status_code: 400, count: 520 },
+    { status_code: 401, count: 190 },
+    { status_code: 403, count: 85 },
+    { status_code: 404, count: 760 },
+    { status_code: 429, count: 210 },
+    { status_code: 500, count: 55 },
+    { status_code: 502, count: 18 },
+    { status_code: 503, count: 12 },
+  ];
+
+  // Mock: 엔드포인트별 사용량
+  const mockEndpointUsage = [
+    { endpoint: '/api/captcha/verify', requests: 60540, avg_ms: 241 },
+    { endpoint: '/api/captcha/init', requests: 42110, avg_ms: 198 },
+    { endpoint: '/api/captcha/image', requests: 15820, avg_ms: 312 },
+    { endpoint: '/api/auth/profile', requests: 420, avg_ms: 95 },
   ];
 
   const formatNumber = (num) => {
@@ -241,6 +264,30 @@ const DashboardScreen = () => {
                   </Typography>
                 </Box>
               </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* 테이블 섹션 */}
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                에러 코드 집계 (일별)
+              </Typography>
+              <ErrorStatsTable rows={mockErrorStats} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                엔드포인트별 사용량 (일별)
+              </Typography>
+              <EndpointUsageTable rows={mockEndpointUsage} />
             </CardContent>
           </Card>
         </Grid>
