@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from '../config/api';
 class DashboardService {
   async getAnalytics(): Promise<ApiResponse<DashboardAnalytics>> {
     try {
-      const response = await apiClient.get<DashboardAnalytics>(
+      const response = await apiClient.get<ApiResponse<DashboardAnalytics>>(
         API_ENDPOINTS.DASHBOARD.ANALYTICS
       );
       return response.data;
@@ -16,7 +16,7 @@ class DashboardService {
 
   async getStats(period: 'daily' | 'weekly' | 'monthly' = 'daily'): Promise<ApiResponse<CaptchaStats[]>> {
     try {
-      const response = await apiClient.get<CaptchaStats[]>(
+      const response = await apiClient.get<ApiResponse<CaptchaStats[]>>(
         `${API_ENDPOINTS.DASHBOARD.STATS}?period=${period}`
       );
       return response.data;
@@ -27,7 +27,7 @@ class DashboardService {
 
   async getRealtimeMetrics(): Promise<ApiResponse<any>> {
     try {
-      const response = await apiClient.get(
+      const response = await apiClient.get<ApiResponse<any>>(
         API_ENDPOINTS.DASHBOARD.REALTIME
       );
       return response.data;
@@ -44,7 +44,7 @@ class DashboardService {
     status?: 'success' | 'failed';
   }): Promise<ApiResponse<any>> {
     try {
-      const response = await apiClient.get(
+      const response = await apiClient.get<ApiResponse<any>>(
         API_ENDPOINTS.CAPTCHA.LOGS,
         { params }
       );
@@ -56,7 +56,7 @@ class DashboardService {
 
   async getCaptchaPerformance(): Promise<ApiResponse<any>> {
     try {
-      const response = await apiClient.get(
+      const response = await apiClient.get<ApiResponse<any>>(
         API_ENDPOINTS.CAPTCHA.PERFORMANCE
       );
       return response.data;

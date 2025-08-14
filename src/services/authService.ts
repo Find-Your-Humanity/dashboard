@@ -11,7 +11,7 @@ export interface AuthResponse {
 class AuthService {
   async login(credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> {
     try {
-      const response = await apiClient.post<AuthResponse>(
+      const response = await apiClient.post<ApiResponse<AuthResponse>>(
         API_ENDPOINTS.AUTH.LOGIN,
         credentials
       );
@@ -23,7 +23,7 @@ class AuthService {
 
   async logout(): Promise<ApiResponse> {
     try {
-      const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+      const response = await apiClient.post<ApiResponse>(API_ENDPOINTS.AUTH.LOGOUT);
       return response.data;
     } catch (error) {
       throw error;
@@ -32,7 +32,7 @@ class AuthService {
 
   async refreshToken(): Promise<ApiResponse<AuthResponse>> {
     try {
-      const response = await apiClient.post<AuthResponse>(
+      const response = await apiClient.post<ApiResponse<AuthResponse>>(
         API_ENDPOINTS.AUTH.REFRESH
       );
       return response.data;
@@ -43,7 +43,7 @@ class AuthService {
 
   async getProfile(): Promise<ApiResponse<User>> {
     try {
-      const response = await apiClient.get<User>(API_ENDPOINTS.AUTH.PROFILE);
+      const response = await apiClient.get<ApiResponse<User>>(API_ENDPOINTS.AUTH.PROFILE);
       return response.data;
     } catch (error) {
       throw error;
