@@ -71,8 +71,9 @@ const UsersScreen: React.FC = () => {
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getRoleChip = (role: string) => {
-    return role === 'admin' ? (
+  const getRoleChip = (role?: string) => {
+    const effectiveRole = role ?? 'user';
+    return effectiveRole === 'admin' ? (
       <Chip label="관리자" color="error" size="small" />
     ) : (
       <Chip label="사용자" color="default" size="small" />
