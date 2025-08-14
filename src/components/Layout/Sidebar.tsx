@@ -27,11 +27,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // 두 가지 모드: admin / tenant
+  const isAdmin = location.pathname.startsWith('/admin');
+  const base = isAdmin ? '/admin' : '/app';
   const menuItems = [
-    { id: 'dashboard', label: '대시보드', path: '/dashboard', icon: <DashboardIcon /> },
-    { id: 'analytics', label: '분석', path: '/analytics', icon: <AnalyticsIcon /> },
-    { id: 'users', label: '사용자 관리', path: '/users', icon: <PeopleIcon /> },
-    { id: 'settings', label: '설정', path: '/settings', icon: <SettingsIcon /> },
+    { id: 'dashboard', label: '대시보드', path: `${base}/dashboard`, icon: <DashboardIcon /> },
+    { id: 'analytics', label: '분석', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
+    ...(isAdmin ? [{ id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> }] : []),
+    { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> },
   ];
 
   const handleItemClick = (path: string) => {

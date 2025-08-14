@@ -2,10 +2,9 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Layout from './components/Layout/Layout';
-import DashboardScreen from './screens/DashboardScreen';
-import AnalyticsScreen from './screens/AnalyticsScreen';
-import UsersScreen from './screens/UsersScreen';
-import SettingsScreen from './screens/SettingsScreen';
+import { TENANT_ROUTES, ADMIN_ROUTES } from './navigation/routes';
+import { RequireAuth, RequireAdmin } from './navigation/guards';
+import LoginScreen from './screens/LoginScreen';
 import './styles/App.css';
 
 const App: React.FC = () => {
@@ -13,12 +12,18 @@ const App: React.FC = () => {
     <Box className="App">
       <Layout>
         <Routes>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<DashboardScreen />} />
-          <Route path="/analytics" element={<AnalyticsScreen />} />
-          <Route path="/users" element={<UsersScreen />} />
-          <Route path="/settings" element={<SettingsScreen />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          {/* 테넌트(고객) 대시보드 */}
+          <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+          {TENANT_ROUTES.map(r => (
+            <Route key={r.path} path={r.path} element={<RequireAuth>{r.element}</RequireAuth>} />
+          ))}
+          {/* 운영자(관리) 대시보드 */}
+          {ADMIN_ROUTES.map(r => (
+            <Route key={r.path} path={r.path} element={<RequireAdmin>{r.element}</RequireAdmin>} />
+          ))}
+          {/* 로그인 */}
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="*" element={<Navigate to="/app/dashboard" replace />} />
         </Routes>
       </Layout>
     </Box>

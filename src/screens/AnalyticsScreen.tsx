@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Grid,
@@ -24,24 +24,64 @@ import {
   Cell,
 } from 'recharts';
 import { formatNumber, formatPercentage } from '../utils';
+import { dashboardService } from '../services/dashboardService';
+import { CaptchaStats } from '../types';
 
 const AnalyticsScreen: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('7days');
+  const [statsData, setStatsData] = useState<CaptchaStats[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   const handleTimePeriodChange = (event: SelectChangeEvent) => {
     setTimePeriod(event.target.value);
   };
 
-  // Mock 데이터
-  const dailyStats = [
-    { date: '2025-01-20', requests: 1250, success: 1188, failed: 62 },
-    { date: '2025-01-21', requests: 1340, success: 1271, failed: 69 },
-    { date: '2025-01-22', requests: 1180, success: 1121, failed: 59 },
-    { date: '2025-01-23', requests: 1520, success: 1444, failed: 76 },
-    { date: '2025-01-24', requests: 1680, success: 1596, failed: 84 },
-    { date: '2025-01-25', requests: 1890, success: 1796, failed: 94 },
-    { date: '2025-01-26', requests: 1750, success: 1663, failed: 87 },
-  ];
+  // API 연동: 기간 변경 시 통계 조회
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const period: 'daily' | 'weekly' | 'monthly' =
+          timePeriod === '7days' ? 'daily' : timePeriod === '30days' ? 'weekly' : 'monthly';
+        const res = await dashboardService.getStats(period);
+        if (res.success) {
+          setStatsData(res.data);
+        } else {
+          setError(res.message || '통계 데이터를 불러오지 못했습니다.');
+          setStatsData([]);
+        }
+      } catch (e) {
+        setError('통계 데이터를 불러오지 못했습니다.');
+        setStatsData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, [timePeriod]);
+
+  // 차트용 가공 데이터 생성 (라벨은 기간에 따라 합성)
+  const chartData = useMemo(() => {
+    const length = statsData.length;
+    const labels: string[] = [];
+    if (length === 7) {
+      // 최근 7일: D-6 ~ D-0
+      for (let i = length - 1; i >= 0; i--) labels.push(`D-${i}`);
+    } else if (length === 4) {
+      labels.push('W1', 'W2', 'W3', 'W4');
+    } else if (length === 3) {
+      labels.push('M1', 'M2', 'M3');
+    } else {
+      for (let i = 0; i < length; i++) labels.push(String(i + 1));
+    }
+    return statsData.map((s, idx) => ({
+      label: labels[idx] ?? `${idx + 1}`,
+      success: s.successfulSolves,
+      failed: s.failedAttempts,
+    }));
+  }, [statsData]);
 
   const captchaTypeStats = [
     { name: '이미지 인식', value: 45, color: '#1976d2' },
@@ -82,23 +122,35 @@ const AnalyticsScreen: React.FC = () => {
         </FormControl>
       </Box>
 
+      {/* 로딩/에러 상태 표시 */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+      {loading && (
+        <Alert severity="info" sx={{ mb: 2 }}>
+          데이터를 불러오는 중입니다...
+        </Alert>
+      )}
+
       <Grid container spacing={3}>
-        {/* 일별 요청 현황 */}
+        {/* 기간별 요청 현황 (API 연동) */}
         <Grid item xs={12} lg={8}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                일별 요청 현황
+                {timePeriod === '7days' ? '일별 요청 현황' : timePeriod === '30days' ? '주간 요청 현황' : '월간 요청 현황'}
               </Typography>
               <Box sx={{ height: 400, mt: 2 }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dailyStats}>
+                  <BarChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
+                    <XAxis dataKey="label" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="success" fill="#2e7d32" name="성공" />
-                    <Bar dataKey="failed" fill="#d32f2f" name="실패" />
+                    <Bar dataKey="success" fill="#2e7d32" name="성공" isAnimationActive={!loading} />
+                    <Bar dataKey="failed" fill="#d32f2f" name="실패" isAnimationActive={!loading} />
                   </BarChart>
                 </ResponsiveContainer>
               </Box>

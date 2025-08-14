@@ -15,6 +15,7 @@ import {
   Security as SecurityIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { APP_CONFIG } from '../config/constants';
 import { LoginCredentials } from '../types';
 
@@ -26,6 +27,9 @@ const LoginScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>('');
   const { login, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as any)?.from?.pathname as string | undefined;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -51,7 +55,10 @@ const LoginScreen: React.FC = () => {
       const success = await login(credentials);
       if (!success) {
         setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+        return;
       }
+      const fallback = fromPath && fromPath.startsWith('/admin') ? '/admin/dashboard' : '/app/dashboard';
+      navigate(fromPath || fallback, { replace: true });
     } catch (err) {
       setError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }

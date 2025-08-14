@@ -11,7 +11,8 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user';
+  role?: 'admin' | 'user';
+  is_admin?: boolean;
   createdAt: string;
   lastLoginAt?: string;
 }
