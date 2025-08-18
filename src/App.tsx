@@ -21,7 +21,7 @@ const RootRedirect: React.FC = () => {
   }
   
   // 관리자면 admin 대시보드로, 아니면 app 대시보드로
-  const targetPath = (user?.is_admin === true || user?.role === 'admin') 
+  const targetPath = (user?.is_admin === true || user?.is_admin === 1 || user?.role === 'admin') 
     ? '/admin/dashboard' 
     : '/app/dashboard';
     
