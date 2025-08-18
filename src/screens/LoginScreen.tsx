@@ -57,7 +57,26 @@ const LoginScreen: React.FC = () => {
         setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
         return;
       }
-      const fallback = fromPath && fromPath.startsWith('/admin') ? '/admin/dashboard' : '/app/dashboard';
+      // 사용자 권한에 따라 리다이렉트 경로 결정
+      let fallback = '/app/dashboard'; // 기본값: 일반 사용자
+      
+      if (fromPath && fromPath.startsWith('/admin')) {
+        fallback = '/admin/dashboard';
+      } else {
+        // AuthContext에서 사용자 정보 가져오기
+        const userData = localStorage.getItem('userData');
+        if (userData) {
+          try {
+            const user = JSON.parse(userData);
+            if (user.is_admin === true || user.role === 'admin') {
+              fallback = '/admin/dashboard'; // 관리자는 admin 대시보드로
+            }
+          } catch (e) {
+            console.warn('사용자 데이터 파싱 오류:', e);
+          }
+        }
+      }
+      
       navigate(fromPath || fallback, { replace: true });
     } catch (err) {
       setError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
