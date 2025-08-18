@@ -49,6 +49,17 @@ class AuthService {
       throw error;
     }
   }
+
+  async getCurrentUser(): Promise<ApiResponse<{ user: User; access_token?: string }>> {
+    try {
+      const response = await apiClient.get<ApiResponse<{ user: User; access_token?: string }>>(
+        '/auth/me'
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const authService = new AuthService();

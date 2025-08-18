@@ -55,19 +55,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // 애플리케이션 시작 시 토큰 확인
-    const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-    const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
-    
-    if (token && userData) {
-      try {
-        const user = JSON.parse(userData);
-        dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
-      } catch (error) {
-        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-        localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+    // 애플리케이션 시작 시 인증 상태 확인 (로컬 스토리지 + 쿠키)
+    const initAuth = async () => {
+      dispatch({ type: 'LOGIN_START' });
+      
+      // 1. 로컬 스토리지 확인
+      const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+      const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
+      
+      if (token && userData) {
+        try {
+          const user = JSON.parse(userData);
+          dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
+          return;
+        } catch (error) {
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        }
       }
-    }
+      
+      // 2. 쿠키 기반 자동 로그인 시도
+      try {
+        const response = await authService.getCurrentUser();
+        if (response.success && response.data.user) {
+          const user = response.data.user;
+          const token = response.data.access_token || '';
+          
+          // 로컬 스토리지에도 저장
+          if (token) {
+            localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+          }
+          localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+          
+          dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
+          return;
+        }
+      } catch (error) {
+        console.warn('쿠키 기반 자동 로그인 실패:', error);
+      }
+      
+      // 인증 실패 시 로딩 상태 해제
+      dispatch({ type: 'LOGIN_FAILURE' });
+    };
+    
+    initAuth();
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
@@ -95,7 +126,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // 백엔드에 로그아웃 요청 (쿠키 제거)
+      await authService.logout();
+    } catch (error) {
+      console.warn('로그아웃 API 호출 실패:', error);
+      // API 실패해도 로컬 상태는 정리
+    }
+    
+    // 로컬 스토리지 및 상태 정리
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER_DATA);
     dispatch({ type: 'LOGOUT' });
