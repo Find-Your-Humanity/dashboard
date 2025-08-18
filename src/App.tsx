@@ -5,15 +5,36 @@ import Layout from './components/Layout/Layout';
 import { TENANT_ROUTES, ADMIN_ROUTES } from './navigation/routes';
 import { RequireAuth, RequireAdmin } from './navigation/guards';
 import LoginScreen from './screens/LoginScreen';
+import { useAuth } from './contexts/AuthContext';
 import './styles/App.css';
+
+// 루트 경로에서 사용자 권한에 따라 리다이렉트
+const RootRedirect: React.FC = () => {
+  const { user, isAuthenticated, loading } = useAuth();
+  
+  if (loading) {
+    return null; // 로딩 중이면 아무것도 렌더링하지 않음
+  }
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // 관리자면 admin 대시보드로, 아니면 app 대시보드로
+  const targetPath = (user?.is_admin === true || user?.role === 'admin') 
+    ? '/admin/dashboard' 
+    : '/app/dashboard';
+    
+  return <Navigate to={targetPath} replace />;
+};
 
 const App: React.FC = () => {
   return (
     <Box className="App">
       <Layout>
         <Routes>
-          {/* 테넌트(고객) 대시보드 */}
-          <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
+          {/* 루트 경로 - 사용자 권한에 따라 리다이렉트 */}
+          <Route path="/" element={<RootRedirect />} />
           {TENANT_ROUTES.map(r => (
             <Route key={r.path} path={r.path} element={<RequireAuth>{r.element}</RequireAuth>} />
           ))}
