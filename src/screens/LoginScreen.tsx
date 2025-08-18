@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Paper,
@@ -26,10 +26,21 @@ const LoginScreen: React.FC = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>('');
-  const { login, loading } = useAuth();
+  const { login, loading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const fromPath = (location.state as any)?.from?.pathname as string | undefined;
+
+  // 이미 로그인된 사용자는 대시보드로 리다이렉트
+  useEffect(() => {
+    if (isAuthenticated && !loading && user) {
+      // 관리자는 admin 대시보드로, 일반 사용자는 app 대시보드로
+      const targetPath = user.is_admin || user.role === 'admin' 
+        ? (fromPath || '/admin/dashboard')
+        : (fromPath || '/app/dashboard');
+      navigate(targetPath, { replace: true });
+    }
+  }, [isAuthenticated, loading, user, fromPath, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -67,6 +78,23 @@ const LoginScreen: React.FC = () => {
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  // 로딩 중이면 빈 화면 반환 (깜빡임 방지)
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'grey.100',
+        }}
+      >
+        <Typography>로딩 중...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box

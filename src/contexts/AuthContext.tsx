@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      // 2. 쿠키 기반 자동 로그인 시도
+      // 2. 쿠키 기반 자동 로그인 시도 (오직 한 번만)
       try {
         const response = await authService.getCurrentUser();
         if (response.success && response.data.user) {
@@ -92,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.warn('쿠키 기반 자동 로그인 실패:', error);
+        // 401 오류 시 localStorage 정리는 이미 apiClient에서 처리됨
       }
       
       // 인증 실패 시 로딩 상태 해제
