@@ -164,6 +164,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER_DATA);
     dispatch({ type: 'LOGOUT' });
+    
+    // 부모 창(웹사이트)에 로그아웃 알림
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({
+        type: 'LOGOUT'
+      }, 'https://www.realcatcha.com');
+    }
   };
 
   const refreshToken = async (): Promise<boolean> => {
