@@ -98,7 +98,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'LOGIN_FAILURE' });
     };
     
+    // 3. PostMessage 리스너 - 부모 창에서 토큰 받기
+    const handlePostMessage = (event: MessageEvent) => {
+      // 보안: 신뢰할 수 있는 도메인에서만 메시지 수신
+      if (event.origin !== 'https://www.realcatcha.com' && event.origin !== 'https://realcatcha.com') {
+        return;
+      }
+      
+      if (event.data.type === 'AUTH_TOKEN' && event.data.token && event.data.user) {
+        // 부모 창에서 받은 토큰으로 자동 로그인
+        const { token, user } = event.data;
+        
+        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
+        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+        
+        dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
+        console.log('PostMessage로 자동 로그인 완료:', user);
+      }
+    };
+    
+    window.addEventListener('message', handlePostMessage);
     initAuth();
+    
+    // 정리
+    return () => {
+      window.removeEventListener('message', handlePostMessage);
+    };
   }, []);
 
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
