@@ -53,7 +53,7 @@ class AuthService {
   async getCurrentUser(): Promise<ApiResponse<{ user: User; access_token?: string }>> {
     try {
       const response = await apiClient.get<ApiResponse<{ user: User; access_token?: string }>>(
-        '/auth/me'
+        API_ENDPOINTS.AUTH.ME
       );
       return response.data;
     } catch (error) {
