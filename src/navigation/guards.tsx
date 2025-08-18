@@ -29,6 +29,10 @@ export const RequireAuth: React.FC<GuardProps> = ({ children }) => {
   }
   
   if (!isAuthenticated) {
+    // 이미 로그인 페이지면 리다이렉트하지 않음 (무한 루프 방지)
+    if (location.pathname === '/login') {
+      return children;
+    }
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
   return children;
@@ -58,6 +62,10 @@ export const RequireAdmin: React.FC<GuardProps> = ({ children }) => {
   }
   
   if (!isAuthenticated) {
+    // 이미 로그인 페이지면 리다이렉트하지 않음 (무한 루프 방지)
+    if (location.pathname === '/login') {
+      return children;
+    }
     return <Navigate to="/login" replace state={{ from: location }} />;
   }
   if (!(user?.is_admin === true || user?.role === 'admin')) {

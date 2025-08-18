@@ -60,7 +60,10 @@ const LoginScreen: React.FC = () => {
       // 사용자 권한에 따라 리다이렉트 경로 결정
       let fallback = '/app/dashboard'; // 기본값: 일반 사용자
       
-      if (fromPath && fromPath.startsWith('/admin')) {
+      // fromPath가 /login이면 무시 (무한 루프 방지)
+      const targetPath = fromPath && fromPath !== '/login' ? fromPath : null;
+      
+      if (targetPath && targetPath.startsWith('/admin')) {
         fallback = '/admin/dashboard';
       } else {
         // AuthContext에서 사용자 정보 가져오기
@@ -77,7 +80,7 @@ const LoginScreen: React.FC = () => {
         }
       }
       
-      navigate(fromPath || fallback, { replace: true });
+      navigate(targetPath || fallback, { replace: true });
     } catch (err) {
       setError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
