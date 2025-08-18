@@ -21,7 +21,7 @@ const initialState: AuthState & { loading: boolean } = {
   isAuthenticated: false,
   user: null,
   token: null,
-  loading: false,
+  loading: true, // 초기에는 로딩 상태로 설정
 };
 
 function authReducer(state: AuthState & { loading: boolean }, action: AuthAction) {
