@@ -1,1 +1,0 @@
-// Converted to TSX entrypoint. See new file `index.tsx`.
