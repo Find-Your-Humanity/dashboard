@@ -12,7 +12,7 @@ export interface User {
   email: string;
   name: string;
   role?: 'admin' | 'user';
-  is_admin?: boolean;
+  is_admin?: boolean | number;
   createdAt: string;
   lastLoginAt?: string;
 }

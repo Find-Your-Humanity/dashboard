@@ -149,7 +149,8 @@ export const RequireAdmin: React.FC<GuardProps> = ({ children }) => {
     );
   }
   
-  if (!(user?.is_admin === true || user?.is_admin === 1 || user?.role === 'admin')) {
+  const isAdmin = user?.is_admin === true || user?.is_admin === 1 || user?.role === 'admin';
+  if (!isAdmin) {
     // 관리자 권한이 없는 경우 안내 메시지 표시
     return (
       <Box 
