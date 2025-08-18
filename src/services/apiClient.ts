@@ -46,9 +46,12 @@ apiClient.interceptors.response.use(
         // ignore
       }
       if (typeof window !== 'undefined') {
-        const current = window.location.pathname + window.location.search;
-        const params = new URLSearchParams({ from: current }).toString();
-        window.location.replace(`/login?${params}`);
+        // 이미 로그인 페이지에 있으면 리다이렉트하지 않음 (무한 루프 방지)
+        if (window.location.pathname !== '/login') {
+          const current = window.location.pathname + window.location.search;
+          const params = new URLSearchParams({ from: current }).toString();
+          window.location.replace(`/login?${params}`);
+        }
       }
     }
     return Promise.reject(error);

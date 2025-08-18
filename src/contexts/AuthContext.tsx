@@ -92,6 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (error) {
         console.warn('쿠키 기반 자동 로그인 실패:', error);
+        // 401 에러인 경우 localStorage도 정리
+        if (error.response?.status === 401) {
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        }
       }
       
       // 인증 실패 시 로딩 상태 해제
