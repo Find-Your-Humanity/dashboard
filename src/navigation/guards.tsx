@@ -29,12 +29,7 @@ export const RequireAuth: React.FC<GuardProps> = ({ children }) => {
   }
   
   if (!isAuthenticated) {
-    // 이미 로그인 페이지면 리다이렉트하지 않음 (무한 루프 방지)
-    if (location.pathname === '/login') {
-      return children;
-    }
-    
-    // 인증되지 않은 경우 안내 메시지 표시
+    // 인증되지 않은 경우 안내 메시지 표시 (iframe 환경 고려)
     return (
       <Box 
         display="flex" 
@@ -55,15 +50,14 @@ export const RequireAuth: React.FC<GuardProps> = ({ children }) => {
           🔒
         </Box>
         <Typography variant="h4" color="error.main" gutterBottom>
-          접근할 수 없습니다
+          로그인이 필요합니다
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
-          이 페이지에 접근하려면 로그인이 필요합니다.
-          먼저 로그인을 진행해주세요.
+          대시보드에 접근하려면 먼저 메인 웹사이트에서 로그인해주세요.
         </Typography>
         <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
           <button
-            onClick={() => window.location.href = '/login'}
+            onClick={() => window.parent?.postMessage({ type: 'NEED_LOGIN' }, 'https://www.realcatcha.com')}
             style={{
               padding: '12px 24px',
               backgroundColor: '#1976d2',
@@ -75,7 +69,7 @@ export const RequireAuth: React.FC<GuardProps> = ({ children }) => {
               fontWeight: 'bold'
             }}
           >
-            로그인하기
+            메인 사이트에서 로그인
           </button>
         </Box>
       </Box>
@@ -108,12 +102,7 @@ export const RequireAdmin: React.FC<GuardProps> = ({ children }) => {
   }
   
   if (!isAuthenticated) {
-    // 이미 로그인 페이지면 리다이렉트하지 않음 (무한 루프 방지)
-    if (location.pathname === '/login') {
-      return children;
-    }
-    
-    // 인증되지 않은 경우 안내 메시지 표시
+    // 인증되지 않은 경우 안내 메시지 표시 (iframe 환경 고려)
     return (
       <Box 
         display="flex" 
@@ -134,15 +123,14 @@ export const RequireAdmin: React.FC<GuardProps> = ({ children }) => {
           🔒
         </Box>
         <Typography variant="h4" color="error.main" gutterBottom>
-          접근할 수 없습니다
+          로그인이 필요합니다
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
-          이 페이지에 접근하려면 로그인이 필요합니다.
-          먼저 로그인을 진행해주세요.
+          대시보드에 접근하려면 먼저 메인 웹사이트에서 로그인해주세요.
         </Typography>
         <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
           <button
-            onClick={() => window.location.href = '/login'}
+            onClick={() => window.parent?.postMessage({ type: 'NEED_LOGIN' }, 'https://www.realcatcha.com')}
             style={{
               padding: '12px 24px',
               backgroundColor: '#1976d2',
@@ -154,7 +142,7 @@ export const RequireAdmin: React.FC<GuardProps> = ({ children }) => {
               fontWeight: 'bold'
             }}
           >
-            로그인하기
+            메인 사이트에서 로그인
           </button>
         </Box>
       </Box>

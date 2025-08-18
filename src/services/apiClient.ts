@@ -45,14 +45,8 @@ apiClient.interceptors.response.use(
       } catch {
         // ignore
       }
-      if (typeof window !== 'undefined') {
-        // 이미 로그인 페이지에 있으면 리다이렉트하지 않음 (무한 루프 방지)
-        if (window.location.pathname !== '/login') {
-          const current = window.location.pathname + window.location.search;
-          const params = new URLSearchParams({ from: current }).toString();
-          window.location.replace(`/login?${params}`);
-        }
-      }
+      // 401 에러 시 localStorage만 정리하고 페이지 리다이렉트는 하지 않음
+      // (인증 상태는 AuthContext에서 관리)
     }
     return Promise.reject(error);
   }

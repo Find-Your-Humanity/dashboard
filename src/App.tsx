@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import Layout from './components/Layout/Layout';
 import { TENANT_ROUTES, ADMIN_ROUTES } from './navigation/routes';
 import { RequireAuth, RequireAdmin } from './navigation/guards';
-import LoginScreen from './screens/LoginScreen';
+// LoginScreen 제거됨 - iframe 환경에서는 별도 로그인 페이지 불필요
 import { useAuth } from './contexts/AuthContext';
 import './styles/App.css';
 
@@ -42,9 +42,8 @@ const App: React.FC = () => {
           {ADMIN_ROUTES.map(r => (
             <Route key={r.path} path={r.path} element={<RequireAdmin>{r.element}</RequireAdmin>} />
           ))}
-          {/* 로그인 */}
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="*" element={<Navigate to="/app/dashboard" replace />} />
+          {/* 존재하지 않는 경로는 루트로 리다이렉트 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
     </Box>
