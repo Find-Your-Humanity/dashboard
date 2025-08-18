@@ -97,6 +97,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // 인증 실패 시 로딩 상태 해제
       dispatch({ type: 'LOGIN_FAILURE' });
+      
+      // 쿠키와 로컬스토리지 모두 인증 실패 시 메인 사이트로 리다이렉트
+      setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          const isDev = process.env.NODE_ENV === 'development';
+          const mainSiteUrl = isDev 
+            ? 'http://localhost:3000/signin' 
+            : 'https://www.realcatcha.com/signin';
+          window.location.href = mainSiteUrl;
+        }
+      }, 100); // 약간의 지연으로 상태 업데이트 완료 보장
     };
     
     // 3. PostMessage 리스너 - 부모 창에서 토큰 받기
@@ -165,6 +176,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER_DATA);
     dispatch({ type: 'LOGOUT' });
+    
+    // 로그아웃 후 메인 사이트로 리다이렉트
+    if (typeof window !== 'undefined') {
+      const isDev = process.env.NODE_ENV === 'development';
+      const mainSiteUrl = isDev 
+        ? 'http://localhost:3000' 
+        : 'https://www.realcatcha.com';
+      window.location.href = mainSiteUrl;
+    }
   };
 
   const refreshToken = async (): Promise<boolean> => {
