@@ -36,15 +36,19 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
-    // 401 오류 시 localStorage만 정리하고 AuthContext에서 처리하도록 함
-    // 자동 리다이렉트는 제거하여 무한 루프 방지
+    // 전역 401 처리: 토큰 만료/유효하지 않은 경우 자동 로그아웃 및 로그인 페이지로 이동
     const status = error.response?.status;
     if (status === 401) {
       try {
         localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.USER_DATA);
       } catch {
-        // ignore storage errors
+        // ignore
+      }
+      if (typeof window !== 'undefined') {
+        const current = window.location.pathname + window.location.search;
+        const params = new URLSearchParams({ from: current }).toString();
+        window.location.replace(`/login?${params}`);
       }
     }
     return Promise.reject(error);
