@@ -147,21 +147,33 @@ const PlansScreen: React.FC = () => {
   };
 
   // 가격 포맷팅
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number, currency = 'KRW') => {
     return new Intl.NumberFormat('ko-KR', {
       style: 'currency',
-      currency: 'KRW',
+      currency: currency,
     }).format(price);
   };
 
   // 요청 제한 포맷팅
-  const formatRequestLimit = (limit: number) => {
+  const formatRequestLimit = (limit?: number) => {
+    if (!limit) return '무제한';
     if (limit >= 1000000) {
       return `${(limit / 1000000).toFixed(1)}M`;
     } else if (limit >= 1000) {
       return `${(limit / 1000).toFixed(1)}K`;
     }
     return limit.toString();
+  };
+
+  // 플랜 타입 칩
+  const getPlanTypeChip = (planType: string) => {
+    const typeConfig = {
+      free: { label: '무료', color: 'success' as const },
+      paid: { label: '유료', color: 'primary' as const },
+      enterprise: { label: '기업', color: 'warning' as const },
+    };
+    const config = typeConfig[planType as keyof typeof typeConfig] || { label: planType, color: 'default' as const };
+    return <Chip label={config.label} color={config.color} size="small" />;
   };
 
   if (loading) {
@@ -207,9 +219,11 @@ const PlansScreen: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>요금제명</TableCell>
+                  <TableCell>타입</TableCell>
                   <TableCell>가격</TableCell>
                   <TableCell>요청 제한</TableCell>
-                  <TableCell>설명</TableCell>
+                  <TableCell>구독자</TableCell>
+                  <TableCell>상태</TableCell>
                   <TableCell align="center">작업</TableCell>
                 </TableRow>
               </TableHead>
@@ -217,28 +231,46 @@ const PlansScreen: React.FC = () => {
                 {plans.map((plan) => (
                   <TableRow key={plan.id} hover>
                     <TableCell>
-                      <Typography variant="subtitle2" fontWeight="bold">
-                        {plan.name}
-                      </Typography>
+                      <Box>
+                        <Typography variant="subtitle2" fontWeight="bold">
+                          {plan.display_name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {plan.name}
+                        </Typography>
+                        {plan.is_popular && (
+                          <Chip label="인기" color="error" size="small" sx={{ ml: 1 }} />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      {getPlanTypeChip(plan.plan_type)}
                     </TableCell>
                     <TableCell>
                       <Chip 
-                        label={formatPrice(plan.price)} 
+                        label={formatPrice(plan.price, plan.currency)} 
                         color="primary" 
                         variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
                       <Chip 
-                        label={`${formatRequestLimit(plan.request_limit)} 요청/월`} 
+                        label={`${formatRequestLimit(plan.monthly_request_limit)} 요청/월`} 
                         color="info" 
                         variant="outlined"
                       />
                     </TableCell>
                     <TableCell>
-                      <Typography variant="body2" color="text.secondary">
-                        {plan.description || '-'}
+                      <Typography variant="body2" fontWeight="bold">
+                        {plan.subscriber_count || 0}명
                       </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip 
+                        label={plan.is_active ? '활성' : '비활성'} 
+                        color={plan.is_active ? 'success' : 'default'} 
+                        size="small"
+                      />
                     </TableCell>
                     <TableCell align="center">
                       <IconButton
@@ -252,6 +284,7 @@ const PlansScreen: React.FC = () => {
                         size="small"
                         onClick={() => confirmDeletePlan(plan)}
                         color="error"
+                        disabled={plan.subscriber_count! > 0}
                       >
                         <DeleteIcon />
                       </IconButton>

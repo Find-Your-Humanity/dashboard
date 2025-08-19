@@ -11,6 +11,11 @@ export interface User {
   is_active: boolean;
   is_admin: boolean;
   created_at: string;
+  // 구독 정보 추가
+  current_plan?: string;
+  plan_display_name?: string;
+  subscription_status?: string;
+  subscription_expires?: string;
 }
 
 export interface UserCreate {
@@ -45,23 +50,56 @@ export interface UsersResponse {
 export interface Plan {
   id: number;
   name: string;
-  price: number;
-  request_limit: number;
+  display_name: string;
   description?: string;
+  plan_type: string;
+  price: number;
+  currency: string;
+  billing_cycle: string;
+  monthly_request_limit?: number;
+  concurrent_requests: number;
+  features?: any;
+  rate_limit_per_minute: number;
+  is_active: boolean;
+  is_popular: boolean;
+  sort_order: number;
+  subscriber_count?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface PlanCreate {
   name: string;
-  price: number;
-  request_limit: number;
+  display_name: string;
   description?: string;
+  plan_type?: string;
+  price: number;
+  currency?: string;
+  billing_cycle?: string;
+  monthly_request_limit?: number;
+  concurrent_requests?: number;
+  features?: any;
+  rate_limit_per_minute?: number;
+  is_active?: boolean;
+  is_popular?: boolean;
+  sort_order?: number;
 }
 
 export interface PlanUpdate {
   name?: string;
-  price?: number;
-  request_limit?: number;
+  display_name?: string;
   description?: string;
+  plan_type?: string;
+  price?: number;
+  currency?: string;
+  billing_cycle?: string;
+  monthly_request_limit?: number;
+  concurrent_requests?: number;
+  features?: any;
+  rate_limit_per_minute?: number;
+  is_active?: boolean;
+  is_popular?: boolean;
+  sort_order?: number;
 }
 
 export interface UserSubscription {

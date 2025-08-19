@@ -252,10 +252,10 @@ const UsersScreen: React.FC = () => {
                   <TableCell>이름</TableCell>
                   <TableCell>이메일</TableCell>
                   <TableCell>사용자명</TableCell>
-                  <TableCell>연락처</TableCell>
+                  <TableCell>현재 플랜</TableCell>
+                  <TableCell>구독 상태</TableCell>
                   <TableCell>역할</TableCell>
                   <TableCell>상태</TableCell>
-                  <TableCell>가입일</TableCell>
                   <TableCell align="center">작업</TableCell>
                 </TableRow>
               </TableHead>
@@ -265,10 +265,42 @@ const UsersScreen: React.FC = () => {
                     <TableCell>{user.name || '-'}</TableCell>
                     <TableCell>{maskEmail(user.email)}</TableCell>
                     <TableCell>{user.username}</TableCell>
-                    <TableCell>{user.contact || '-'}</TableCell>
+                    <TableCell>
+                      {user.plan_display_name ? (
+                        <Chip 
+                          label={user.plan_display_name} 
+                          color="primary" 
+                          variant="outlined" 
+                          size="small"
+                        />
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          플랜 없음
+                        </Typography>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {user.subscription_status ? (
+                        <Chip 
+                          label={
+                            user.subscription_status === 'active' ? '활성' :
+                            user.subscription_status === 'expired' ? '만료' :
+                            user.subscription_status === 'cancelled' ? '취소' : 
+                            user.subscription_status
+                          }
+                          color={
+                            user.subscription_status === 'active' ? 'success' :
+                            user.subscription_status === 'expired' ? 'error' :
+                            'default'
+                          }
+                          size="small"
+                        />
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">-</Typography>
+                      )}
+                    </TableCell>
                     <TableCell>{getRoleChip(user.is_admin)}</TableCell>
                     <TableCell>{getStatusChip(user.is_active)}</TableCell>
-                    <TableCell>{formatDate(user.created_at)}</TableCell>
                     <TableCell align="center">
                       <IconButton
                         size="small"
