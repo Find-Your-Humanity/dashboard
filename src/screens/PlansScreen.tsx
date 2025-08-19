@@ -48,9 +48,18 @@ const PlansScreen: React.FC = () => {
   // 폼 상태
   const [formData, setFormData] = useState<PlanCreate | PlanUpdate>({
     name: '',
+    display_name: '',
     price: 0,
-    request_limit: 0,
+    monthly_request_limit: 0,
+    concurrent_requests: 1,
+    rate_limit_per_minute: 60,
     description: '',
+    plan_type: 'paid',
+    currency: 'KRW',
+    billing_cycle: 'monthly',
+    is_active: true,
+    is_popular: false,
+    sort_order: 0,
   });
 
   // 요금제 목록 로드
@@ -78,17 +87,35 @@ const PlansScreen: React.FC = () => {
       setEditingPlan(plan);
       setFormData({
         name: plan.name,
+        display_name: plan.display_name,
         price: plan.price,
-        request_limit: plan.request_limit,
+        monthly_request_limit: plan.monthly_request_limit,
+        concurrent_requests: plan.concurrent_requests,
+        rate_limit_per_minute: plan.rate_limit_per_minute,
         description: plan.description || '',
+        plan_type: plan.plan_type,
+        currency: plan.currency,
+        billing_cycle: plan.billing_cycle,
+        is_active: plan.is_active,
+        is_popular: plan.is_popular,
+        sort_order: plan.sort_order,
       });
     } else {
       setEditingPlan(null);
       setFormData({
         name: '',
+        display_name: '',
         price: 0,
-        request_limit: 0,
+        monthly_request_limit: 0,
+        concurrent_requests: 1,
+        rate_limit_per_minute: 60,
         description: '',
+        plan_type: 'paid',
+        currency: 'KRW',
+        billing_cycle: 'monthly',
+        is_active: true,
+        is_popular: false,
+        sort_order: 0,
       });
     }
     setPlanDialogOpen(true);
@@ -314,15 +341,25 @@ const PlansScreen: React.FC = () => {
           <Box sx={{ pt: 1 }}>
             <TextField
               fullWidth
-              label="요금제명"
+              label="요금제 ID"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               margin="normal"
               required
+              helperText="시스템에서 사용할 고유 ID (예: free, pro, enterprise)"
             />
             <TextField
               fullWidth
-              label="가격 (원)"
+              label="표시명"
+              value={formData.display_name}
+              onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+              margin="normal"
+              required
+              helperText="사용자에게 보여질 이름"
+            />
+            <TextField
+              fullWidth
+              label="가격"
               type="number"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
@@ -333,11 +370,28 @@ const PlansScreen: React.FC = () => {
               fullWidth
               label="월 요청 제한"
               type="number"
-              value={formData.request_limit}
-              onChange={(e) => setFormData({ ...formData, request_limit: Number(e.target.value) })}
+              value={formData.monthly_request_limit || ''}
+              onChange={(e) => setFormData({ ...formData, monthly_request_limit: e.target.value ? Number(e.target.value) : undefined })}
+              margin="normal"
+              helperText="월별 API 요청 가능 횟수 (빈칸 = 무제한)"
+            />
+            <TextField
+              fullWidth
+              label="동시 요청 수"
+              type="number"
+              value={formData.concurrent_requests}
+              onChange={(e) => setFormData({ ...formData, concurrent_requests: Number(e.target.value) })}
               margin="normal"
               required
-              helperText="월별 API 요청 가능 횟수"
+            />
+            <TextField
+              fullWidth
+              label="분당 요청 제한"
+              type="number"
+              value={formData.rate_limit_per_minute}
+              onChange={(e) => setFormData({ ...formData, rate_limit_per_minute: Number(e.target.value) })}
+              margin="normal"
+              required
             />
             <TextField
               fullWidth
