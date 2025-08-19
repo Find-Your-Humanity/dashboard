@@ -3,6 +3,7 @@ import DashboardScreen from '../screens/DashboardScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
 import UsersScreen from '../screens/UsersScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import PlansScreen from '../screens/PlansScreen';
 
 export type AppRoute = {
   path: string;
@@ -22,6 +23,7 @@ export const ADMIN_ROUTES: AppRoute[] = [
   { id: 'dashboard', label: '대시보드', path: '/admin/dashboard', element: <DashboardScreen />, showInMenu: true },
   { id: 'analytics', label: '분석', path: '/admin/analytics', element: <AnalyticsScreen />, showInMenu: true },
   { id: 'users', label: '사용자 관리', path: '/admin/users', element: <UsersScreen />, showInMenu: true },
+  { id: 'plans', label: '요금제 관리', path: '/admin/plans', element: <PlansScreen />, showInMenu: true },
   { id: 'settings', label: '설정', path: '/admin/settings', element: <SettingsScreen />, showInMenu: true },
 ];
 

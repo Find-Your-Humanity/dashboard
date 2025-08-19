@@ -16,6 +16,7 @@ import {
   People as PeopleIcon,
   Settings as SettingsIcon,
   Security as SecurityIcon,
+  Payment as PaymentIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -33,7 +34,10 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const menuItems = [
     { id: 'dashboard', label: '대시보드', path: `${base}/dashboard`, icon: <DashboardIcon /> },
     { id: 'analytics', label: '분석', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
-    ...(isAdmin ? [{ id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> }] : []),
+    ...(isAdmin ? [
+      { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
+      { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
+    ] : []),
     { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> },
   ];
 
