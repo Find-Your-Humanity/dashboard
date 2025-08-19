@@ -153,6 +153,32 @@ export interface PlanSubscribersResponse {
   subscribers: PlanSubscriber[];
 }
 
+// 문의사항 관련 타입들
+export interface ContactRequest {
+  id: number;
+  subject: string;
+  contact: string;
+  email: string;
+  message: string;
+  attachment_filename?: string;
+  status: 'unread' | 'in_progress' | 'resolved';
+  admin_response?: string;
+  admin_username?: string;
+  created_at: string;
+  updated_at: string;
+  resolved_at?: string;
+}
+
+export interface ContactRequestsResponse {
+  data: ContactRequest[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
 class AdminService {
   // ==================== 사용자 관리 ====================
   
@@ -288,6 +314,61 @@ class AdminService {
     try {
       const response = await apiClient.get<ApiResponse<PlanSubscribersResponse>>(
         `/api/admin/plans/${planId}/subscribers`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ==================== 문의사항 관리 ====================
+  
+  async getContactRequests(page = 1, limit = 20, status?: string): Promise<ApiResponse<ContactRequestsResponse>> {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+      
+      if (status) {
+        params.append('status', status);
+      }
+      
+      const response = await apiClient.get<ApiResponse<ContactRequestsResponse>>(
+        `/api/admin/contact-requests?${params.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateContactRequest(contactId: number, status?: string, adminResponse?: string): Promise<ApiResponse> {
+    try {
+      const params = new URLSearchParams();
+      
+      if (status) {
+        params.append('status', status);
+      }
+      
+      if (adminResponse !== undefined) {
+        params.append('admin_response', adminResponse);
+      }
+      
+      const response = await apiClient.put<ApiResponse>(
+        `/api/admin/contact-requests/${contactId}?${params.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async downloadContactAttachment(contactId: number): Promise<Blob> {
+    try {
+      const response = await apiClient.get(
+        `/api/admin/contact-requests/${contactId}/attachment`,
+        { responseType: 'blob' }
       );
       return response.data;
     } catch (error) {
