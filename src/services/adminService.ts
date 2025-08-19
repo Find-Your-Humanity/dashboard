@@ -113,6 +113,46 @@ export interface UserSubscription {
   description?: string;
 }
 
+// 요금제별 구독자 상세 정보 타입들
+export interface PlanSubscriber {
+  user_id: number;
+  username: string;
+  email: string;
+  name?: string;
+  user_created_at: string;
+  subscription_id: number;
+  start_date: string;
+  end_date?: string;
+  subscription_status: string;
+  amount: number;
+  payment_method?: string;
+  notes?: string;
+  subscription_created_at: string;
+  plan_name: string;
+  plan_display_name: string;
+  monthly_request_limit?: number;
+  monthly_requests_used: number;
+  daily_requests_used: number;
+  last_request_time?: string;
+}
+
+export interface PlanSubscriberStats {
+  plan_info: {
+    id: number;
+    name: string;
+    display_name: string;
+  };
+  total_subscribers: number;
+  active_subscribers: number;
+  total_monthly_requests: number;
+  total_daily_requests: number;
+}
+
+export interface PlanSubscribersResponse {
+  plan_stats: PlanSubscriberStats;
+  subscribers: PlanSubscriber[];
+}
+
 class AdminService {
   // ==================== 사용자 관리 ====================
   
@@ -235,6 +275,19 @@ class AdminService {
       const response = await apiClient.post<ApiResponse>(
         `/api/admin/users/${userId}/subscription`,
         { plan_id: planId }
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // ==================== 요금제별 구독자 상세 정보 ====================
+  
+  async getPlanSubscribers(planId: number): Promise<ApiResponse<PlanSubscribersResponse>> {
+    try {
+      const response = await apiClient.get<ApiResponse<PlanSubscribersResponse>>(
+        `/api/admin/plans/${planId}/subscribers`
       );
       return response.data;
     } catch (error) {
