@@ -19,6 +19,7 @@ import {
   Payment as PaymentIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface SidebarProps {
   onItemClick?: () => void;
@@ -27,14 +28,22 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
+  // 실제 사용자 권한 확인
+  const isUserAdmin = user?.is_admin === true || user?.is_admin === 1 || user?.role === 'admin';
+  
   // 두 가지 모드: admin / tenant
-  const isAdmin = location.pathname.startsWith('/admin');
-  const base = isAdmin ? '/admin' : '/app';
+  const isAdminPath = location.pathname.startsWith('/admin');
+  
+  // 일반 사용자는 항상 /app 경로 사용, 관리자만 /admin 경로 사용
+  const base = (isUserAdmin && isAdminPath) ? '/admin' : '/app';
+  
   const menuItems = [
     { id: 'dashboard', label: '대시보드', path: `${base}/dashboard`, icon: <DashboardIcon /> },
     { id: 'analytics', label: '분석', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
-    ...(isAdmin ? [
+    // 실제 관리자 권한이 있을 때만 관리자 메뉴 표시
+    ...(isUserAdmin ? [
       { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
       { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
     ] : []),
