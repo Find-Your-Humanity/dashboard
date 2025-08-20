@@ -35,18 +35,45 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 // Pass through successful responses; normalize errors for easier handling
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
-  (error: AxiosError) => {
-    // 전역 401 처리: 토큰 만료/유효하지 않은 경우 자동 로그아웃 및 로그인 페이지로 이동
+  async (error: AxiosError) => {
     const status = error.response?.status;
+    const originalRequest = error.config as any;
+
+    // 401이면 1회 한해 /auth/refresh 호출 후 원요청 재시도
+    if (status === 401 && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshResp = await axios.post(
+          `${API_CONFIG.BASE_URL}/auth/refresh`,
+          {},
+          { withCredentials: true }
+        );
+        const newAccess = (refreshResp.data as any)?.access_token;
+        if (newAccess) {
+          try {
+            localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newAccess);
+          } catch {}
+          originalRequest.headers = {
+            ...(originalRequest.headers || {}),
+            Authorization: `Bearer ${newAccess}`,
+          };
+        }
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        // refresh 실패 시 토큰 정리 후 원래 에러로 진행
+        try {
+          localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+          localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        } catch {}
+      }
+    }
+
+    // 기타 경우(또는 refresh 실패한 401): 정리하고 리턴
     if (status === 401) {
       try {
         localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.USER_DATA);
-      } catch {
-        // ignore
-      }
-      // 401 에러 시 localStorage만 정리하고 페이지 리다이렉트는 하지 않음
-      // (인증 상태는 AuthContext에서 관리)
+      } catch {}
     }
     return Promise.reject(error);
   }
