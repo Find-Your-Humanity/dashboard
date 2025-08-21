@@ -375,6 +375,132 @@ class AdminService {
       throw error;
     }
   }
+
+  // ==================== 요청 상태 관리 ====================
+  
+  async getRequestStats(days = 7): Promise<ApiResponse<RequestStats>> {
+    try {
+      const response = await apiClient.get<ApiResponse<RequestStats>>(
+        `/api/admin/request-stats?days=${days}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getRequestLogs(
+    page = 1, 
+    limit = 50, 
+    days = 7,
+    userId?: number,
+    statusCode?: number,
+    path?: string
+  ): Promise<ApiResponse<RequestLogsResponse>> {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        days: days.toString(),
+      });
+      
+      if (userId) {
+        params.append('user_id', userId.toString());
+      }
+      
+      if (statusCode) {
+        params.append('status_code', statusCode.toString());
+      }
+      
+      if (path) {
+        params.append('path', path);
+      }
+      
+      const response = await apiClient.get<ApiResponse<RequestLogsResponse>>(
+        `/api/admin/request-logs?${params.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getErrorStats(days = 7): Promise<ApiResponse<ErrorStatsResponse>> {
+    try {
+      const response = await apiClient.get<ApiResponse<ErrorStatsResponse>>(
+        `/api/admin/error-stats?days=${days}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getEndpointUsage(days = 7): Promise<ApiResponse<EndpointUsageResponse>> {
+    try {
+      const response = await apiClient.get<ApiResponse<EndpointUsageResponse>>(
+        `/api/admin/endpoint-usage?days=${days}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+// 요청 상태 관리 타입들
+export interface RequestLog {
+  id: number;
+  user_id?: number;
+  api_key?: string;
+  path: string;
+  method: string;
+  status_code: number;
+  response_time: number;
+  user_agent?: string;
+  request_time: string;
+  user_email?: string;
+  user_username?: string;
+}
+
+export interface RequestStats {
+  total_requests: number;
+  success_count: number;
+  failure_count: number;
+  avg_response_time: number;
+  unique_users: number;
+  unique_api_keys: number;
+}
+
+export interface ErrorStats {
+  status_code: number;
+  count: number;
+  percentage: number;
+}
+
+export interface EndpointUsage {
+  endpoint: string;
+  requests: number;
+  avg_response_time: number;
+  percentage: number;
+}
+
+export interface RequestLogsResponse {
+  logs: RequestLog[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export interface ErrorStatsResponse {
+  error_stats: ErrorStats[];
+}
+
+export interface EndpointUsageResponse {
+  endpoint_usage: EndpointUsage[];
 }
 
 export const adminService = new AdminService();

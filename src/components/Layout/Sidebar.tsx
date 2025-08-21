@@ -18,6 +18,7 @@ import {
   Security as SecurityIcon,
   Payment as PaymentIcon,
   Email as EmailIcon,
+  Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -48,6 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
       { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
       { id: 'requests', label: '요청사항', path: `${base}/requests`, icon: <EmailIcon /> },
+      { id: 'request-status', label: '요청 상태', path: `${base}/request-status`, icon: <TimelineIcon /> },
     ] : []),
     { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> },
   ];
