@@ -9,6 +9,7 @@ import {
   Toolbar,
   Typography,
   Divider,
+  Skeleton,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
@@ -30,10 +31,19 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  // 실제 사용자 권한 확인
-  const isUserAdmin = user?.is_admin === true || user?.is_admin === 1 || user?.role === 'admin';
+  // 실제 사용자 권한 확인 - 더 엄격한 체크
+  const isUserAdmin = React.useMemo(() => {
+    if (loading || !user) return false;
+    
+    // 명시적으로 관리자 권한이 있는 경우만 true
+    return (
+      user.is_admin === true || 
+      user.is_admin === 1 || 
+      user.role === 'admin'
+    );
+  }, [user, loading]);
   
   // 두 가지 모드: admin / tenant
   const isAdminPath = location.pathname.startsWith('/admin');
@@ -41,17 +51,29 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   // 일반 사용자는 항상 /app 경로 사용, 관리자만 /admin 경로 사용
   const base = (isUserAdmin && isAdminPath) ? '/admin' : '/app';
   
-  const menuItems = [
+  // 기본 메뉴 항목 (모든 사용자)
+  const baseMenuItems = [
     { id: 'dashboard', label: '대시보드', path: `${base}/dashboard`, icon: <DashboardIcon /> },
     { id: 'analytics', label: '분석', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
-    // 실제 관리자 권한이 있을 때만 관리자 메뉴 표시
-    ...(isUserAdmin ? [
-      { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
-      { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
-      { id: 'requests', label: '요청사항', path: `${base}/requests`, icon: <EmailIcon /> },
-      { id: 'request-status', label: '요청 상태', path: `${base}/request-status`, icon: <TimelineIcon /> },
-    ] : []),
-    { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> },
+  ];
+
+  // 관리자 전용 메뉴 항목
+  const adminMenuItems = [
+    { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
+    { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
+    { id: 'requests', label: '요청사항', path: `${base}/requests`, icon: <EmailIcon /> },
+    { id: 'request-status', label: '요청 상태', path: `${base}/request-status`, icon: <TimelineIcon /> },
+  ];
+
+  // 설정 메뉴 (모든 사용자)
+  const settingsMenuItem = { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> };
+
+  // 최종 메뉴 구성
+  const menuItems = [
+    ...baseMenuItems,
+    // 로딩 중이거나 사용자 정보가 없으면 관리자 메뉴 숨김
+    ...(loading ? [] : isUserAdmin ? adminMenuItems : []),
+    settingsMenuItem,
   ];
 
   const handleItemClick = (path: string) => {
@@ -104,6 +126,24 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             </ListItem>
           );
         })}
+        
+        {/* 로딩 중일 때 관리자 메뉴 스켈레톤 */}
+        {loading && (
+          <>
+            {adminMenuItems.map((item) => (
+              <ListItem key={`skeleton-${item.id}`} disablePadding>
+                <ListItemButton disabled sx={{ mx: 1, mb: 0.5, borderRadius: 1 }}>
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <Skeleton variant="circular" width={24} height={24} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={<Skeleton variant="text" width="80%" />}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </>
+        )}
       </List>
 
       <Divider sx={{ mt: 2 }} />

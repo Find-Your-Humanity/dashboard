@@ -66,9 +66,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
+          // 로컬 데이터가 있으면 즉시 로그인 상태로 설정
           dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
+          
+          // 백그라운드에서 서버 검증
+          setTimeout(async () => {
+            try {
+              const response = await authService.getCurrentUser();
+              if (response.success && response.data.user) {
+                // 서버 데이터로 업데이트
+                const serverUser = response.data.user;
+                const serverToken = response.data.access_token || token;
+                
+                localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, serverToken);
+                localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(serverUser));
+                
+                dispatch({ type: 'REFRESH_SUCCESS', payload: { user: serverUser, token: serverToken } });
+              } else {
+                // 서버 검증 실패 시 로컬 데이터 정리
+                console.log('서버 검증 실패, 로컬 데이터 정리');
+                localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+                localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+                dispatch({ type: 'LOGOUT' });
+              }
+            } catch (error) {
+              console.warn('서버 검증 중 오류:', error);
+              // 네트워크 오류 시에도 로컬 데이터 정리
+              if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as any;
+                if (axiosError.response?.status === 401) {
+                  localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+                  localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+                  dispatch({ type: 'LOGOUT' });
+                }
+              }
+            }
+          }, 1000);
+          
           return;
         } catch (error) {
+          console.log('로컬 데이터 파싱 실패, 정리');
           localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
           localStorage.removeItem(STORAGE_KEYS.USER_DATA);
         }
@@ -114,6 +151,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (event.data.type === 'AUTH_TOKEN' && event.data.token && event.data.user) {
+        // 기존 로컬 데이터 정리 후 새 데이터 저장
+        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+        
         // 부모 창에서 받은 토큰으로 자동 로그인
         const { token, user } = event.data;
         
@@ -206,6 +247,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     refreshToken,
+    loading: state.loading,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
