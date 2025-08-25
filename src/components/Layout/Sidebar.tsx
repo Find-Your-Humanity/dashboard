@@ -55,6 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const baseMenuItems = [
     { id: 'dashboard', label: '대시보드', path: `${base}/dashboard`, icon: <DashboardIcon /> },
     { id: 'analytics', label: '분석', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
+    { id: 'billing', label: '요금', path: `${base}/billing`, icon: <PaymentIcon /> },
   ];
 
   // 관리자 전용 메뉴 항목
