@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.realcatcha.com';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://gateway.realcatcha.com';
 
 // API 클라이언트 설정
 const apiClient = axios.create({
