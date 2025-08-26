@@ -170,7 +170,7 @@ const DashboardScreen: React.FC = () => {
                   <Typography variant="h6" gutterBottom>
                     Credit 사용량
                   </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
                     <Box sx={{ width: '80%', mb: 2, position: 'relative' }}>
                       <LinearProgress 
                         variant="determinate" 
@@ -220,7 +220,7 @@ const DashboardScreen: React.FC = () => {
                   <Typography variant="h6" gutterBottom>
                     Pro Credit
                   </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
                     <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
                       <LinearProgress 
                         variant="determinate" 
