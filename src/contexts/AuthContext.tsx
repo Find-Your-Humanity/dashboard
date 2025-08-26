@@ -72,11 +72,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // 백그라운드에서 서버 검증
           setTimeout(async () => {
             try {
-                      const response = await authService.getCurrentUser();
-        if (response.success && response.user) {
-          // 서버 데이터로 업데이트
-          const serverUser = response.user;
-          const serverToken = response.access_token || token;
+              const response = await authService.getCurrentUser();
+              if (response.success && response.data && response.data.user) {
+                // 서버 데이터로 업데이트
+                const serverUser = response.data.user;
+                const serverToken = response.data.access_token || token;
                 
                 localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, serverToken);
                 localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(serverUser));
@@ -114,9 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // 2. 쿠키 기반 자동 로그인 시도
       try {
         const response = await authService.getCurrentUser();
-        if (response.success && response.user) {
-          const user = response.user;
-          const token = response.access_token || '';
+        if (response.success && response.data && response.data.user) {
+          const user = response.data.user;
+          const token = response.data.access_token || '';
           
           // 로컬 스토리지에도 저장
           if (token) {
