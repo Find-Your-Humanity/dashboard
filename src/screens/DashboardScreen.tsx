@@ -194,7 +194,7 @@ const DashboardScreen: React.FC = () => {
                         color="text.secondary"
                         sx={{
                           position: 'absolute',
-                          bottom: -20,
+                          bottom: -10,
                           left: '75%',
                           transform: 'translateX(-50%)'
                         }}
@@ -221,7 +221,7 @@ const DashboardScreen: React.FC = () => {
                     Pro Credit
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
-                    <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
+                    <Box sx={{ width: '80%', mb: 2, position: 'relative' }}>
                       <LinearProgress 
                         variant="determinate" 
                         value={45} 
@@ -244,7 +244,7 @@ const DashboardScreen: React.FC = () => {
                         color="text.secondary"
                         sx={{
                           position: 'absolute',
-                          bottom: -20,
+                          bottom: -10,
                           left: '45%',
                           transform: 'translateX(-50%)'
                         }}
