@@ -115,7 +115,7 @@ const DashboardScreen: React.FC = () => {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h4" component="h1" gutterBottom>
-            대시보드
+            Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
             Real Captcha 서비스 모니터링 및 관리
