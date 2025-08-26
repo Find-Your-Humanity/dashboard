@@ -80,11 +80,10 @@ const DashboardScreen: React.FC = () => {
   ];
 
   const mockLevelData = [
-    { name: 'Level 1', value: 35, color: '#8884d8' },
-    { name: 'Level 2', value: 25, color: '#82ca9d' },
-    { name: 'Level 3', value: 20, color: '#ffc658' },
-    { name: 'Level 4', value: 15, color: '#ff7300' },
-    { name: 'Level 5', value: 5, color: '#d62728' },
+    { name: 'Level 0', value: 40, color: '#8884d8' },
+    { name: 'Level 1', value: 30, color: '#82ca9d' },
+    { name: 'Level 2', value: 20, color: '#ffc658' },
+    { name: 'Level 3', value: 10, color: '#ff7300' },
   ];
 
   const StatCard = ({ title, value, icon, color, subtitle }: {
@@ -234,49 +233,94 @@ const DashboardScreen: React.FC = () => {
         </Grid>
       </Grid>
 
-      {/* Pro Credit */}
-      <Box sx={{ mb: 3 }}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Pro Credit
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-              <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="caption" color="text.secondary">0</Typography>
-                  <Typography variant="caption" color="text.secondary">100</Typography>
-                </Box>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={45} 
-                  sx={{ 
-                    height: 16, 
-                    borderRadius: 8,
-                    backgroundColor: '#e0e0e0',
-                    '& .MuiLinearProgress-bar': {
+      {/* Credit 및 Pro Credit */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Credit
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="caption" color="text.secondary">0</Typography>
+                    <Typography variant="caption" color="text.secondary">100</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={75} 
+                    sx={{ 
+                      height: 16, 
                       borderRadius: 8,
-                      backgroundColor: '#9c27b0'
-                    }
-                  }} 
-                />
-                <Typography 
-                  variant="body2" 
-                  color="text.secondary"
-                  sx={{
-                    position: 'absolute',
-                    bottom: -20,
-                    left: '45%',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  45%
-                </Typography>
+                      backgroundColor: '#e0e0e0',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 8,
+                        backgroundColor: '#1976d2'
+                      }
+                    }} 
+                  />
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{
+                      position: 'absolute',
+                      bottom: -20,
+                      left: '75%',
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    75%
+                  </Typography>
+                </Box>
               </Box>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Pro Credit
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="caption" color="text.secondary">0</Typography>
+                    <Typography variant="caption" color="text.secondary">100</Typography>
+                  </Box>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={45} 
+                    sx={{ 
+                      height: 16, 
+                      borderRadius: 8,
+                      backgroundColor: '#e0e0e0',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 8,
+                        backgroundColor: '#9c27b0'
+                      }
+                    }} 
+                  />
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{
+                      position: 'absolute',
+                      bottom: -20,
+                      left: '45%',
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    45%
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* 주요 메트릭 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
