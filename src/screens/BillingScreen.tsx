@@ -29,7 +29,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { billingService, Plan, CurrentPlan } from '../services/billingService';
-import BillingTest from '../components/BillingTest';
+
 
 const BillingScreen: React.FC = () => {
   const { user } = useAuth();
@@ -132,8 +132,7 @@ const BillingScreen: React.FC = () => {
         현재 요금제를 확인하고 필요에 따라 변경할 수 있습니다.
       </Typography>
       
-      {/* API 테스트 컴포넌트 추가 */}
-      <BillingTest />
+
 
       {error && (
         <Alert severity="error" sx={{ mb: 3 }}>
