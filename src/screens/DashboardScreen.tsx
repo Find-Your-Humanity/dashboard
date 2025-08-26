@@ -93,7 +93,15 @@ const DashboardScreen: React.FC = () => {
     color: string;
     subtitle?: string;
   }) => (
-    <Card>
+    <Card sx={{ 
+      height: 140,
+      transition: 'all 0.3s ease-in-out',
+      '&:hover': {
+        transform: 'translateY(-4px)',
+        boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+        cursor: 'pointer'
+      }
+    }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box>
@@ -127,7 +135,7 @@ const DashboardScreen: React.FC = () => {
               Dashboard
             </Typography>
             <Chip
-              label="정상 운영"
+              label="정상"
               color="success"
               variant="outlined"
               icon={<SuccessIcon />}
@@ -150,22 +158,25 @@ const DashboardScreen: React.FC = () => {
         <Grid item xs={12} md={6}>
           <Grid container spacing={2} direction="column">
             <Grid item>
-              <Card>
+              <Card sx={{ 
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                  cursor: 'pointer'
+                }
+              }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Credit 사용량
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-                    <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="caption" color="text.secondary">0</Typography>
-                        <Typography variant="caption" color="text.secondary">100</Typography>
-                      </Box>
+                    <Box sx={{ width: '80%', mb: 2, position: 'relative' }}>
                       <LinearProgress 
                         variant="determinate" 
                         value={75} 
                         sx={{ 
-                          height: 16, 
+                          height: 20, 
                           borderRadius: 8,
                           backgroundColor: '#e0e0e0',
                           '& .MuiLinearProgress-bar': {
@@ -174,6 +185,10 @@ const DashboardScreen: React.FC = () => {
                           }
                         }} 
                       />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                        <Typography variant="caption" color="text.secondary">0</Typography>
+                        <Typography variant="caption" color="text.secondary">100</Typography>
+                      </Box>
                       <Typography 
                         variant="body2" 
                         color="text.secondary"
@@ -193,17 +208,20 @@ const DashboardScreen: React.FC = () => {
             </Grid>
             
             <Grid item>
-              <Card>
+              <Card sx={{ 
+                transition: 'all 0.3s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                  cursor: 'pointer'
+                }
+              }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
                     Pro Credit
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
                     <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography variant="caption" color="text.secondary">0</Typography>
-                        <Typography variant="caption" color="text.secondary">100</Typography>
-                      </Box>
                       <LinearProgress 
                         variant="determinate" 
                         value={45} 
@@ -217,6 +235,10 @@ const DashboardScreen: React.FC = () => {
                           }
                         }} 
                       />
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                        <Typography variant="caption" color="text.secondary">0</Typography>
+                        <Typography variant="caption" color="text.secondary">100</Typography>
+                      </Box>
                       <Typography 
                         variant="body2" 
                         color="text.secondary"
@@ -238,7 +260,14 @@ const DashboardScreen: React.FC = () => {
         </Grid>
         
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ 
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+              cursor: 'pointer'
+            }
+          }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 캡챠 레벨별 사용량
@@ -320,13 +349,20 @@ const DashboardScreen: React.FC = () => {
 
       {/* 차트 */}
       <Grid container spacing={3}>
-        <Grid item xs={12} lg={8}>
-          <Card>
+        <Grid item xs={12}>
+          <Card sx={{ 
+            transition: 'all 0.3s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-4px)',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+              cursor: 'pointer'
+            }
+          }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 시간별 요청 현황
               </Typography>
-              <Box sx={{ height: 300, mt: 2 }}>
+              <Box sx={{ height: 250, mt: 2 }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={mockChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -349,30 +385,6 @@ const DashboardScreen: React.FC = () => {
                     />
                   </LineChart>
                 </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} lg={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                실시간 알림
-              </Typography>
-              <Box sx={{ mt: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <SuccessIcon sx={{ color: 'success.main', mr: 1 }} />
-                  <Typography variant="body2">
-                    모든 서비스가 정상 작동 중입니다.
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <ErrorIcon sx={{ color: 'warning.main', mr: 1 }} />
-                  <Typography variant="body2">
-                    GPU 풀 사용률이 85%에 도달했습니다.
-                  </Typography>
-                </Box>
               </Box>
             </CardContent>
           </Card>
