@@ -1,5 +1,6 @@
 import { apiClient } from './apiClient';
 import { ApiResponse } from '../types';
+import axios, { AxiosError } from 'axios';
 
 export interface Plan {
   id: number;
@@ -57,6 +58,46 @@ export interface PlanChangeResponse {
   effective_date: string;
 }
 
+// Axios 에러 처리 헬퍼 함수
+function handleAxiosError(error: any, defaultMessage: string): string {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError;
+    
+    // Network Error (서버 연결 실패)
+    if (axiosError.code === 'ERR_NETWORK') {
+      return '서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요.';
+    }
+    
+    // Timeout Error
+    if (axiosError.code === 'ECONNABORTED') {
+      return '요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.';
+    }
+    
+    // HTTP Status Error
+    if (axiosError.response) {
+      const status = axiosError.response.status;
+      switch (status) {
+        case 401:
+          return '인증이 필요합니다. 다시 로그인해주세요.';
+        case 403:
+          return '접근 권한이 없습니다.';
+        case 404:
+          return '요청한 리소스를 찾을 수 없습니다.';
+        case 500:
+          return '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        default:
+          return `서버 오류가 발생했습니다. (${status})`;
+      }
+    }
+    
+    // 기타 Axios 에러
+    return axiosError.message || defaultMessage;
+  }
+  
+  // 일반 JavaScript 에러
+  return error?.message || defaultMessage;
+}
+
 class BillingService {
   // 사용 가능한 요금제 목록 조회
   async getAvailablePlans(): Promise<ApiResponse<Plan[]>> {
@@ -67,11 +108,12 @@ class BillingService {
         data: response.data
       };
     } catch (error) {
+      const errorMessage = handleAxiosError(error, '요금제 목록을 불러오는데 실패했습니다.');
       console.error('요금제 목록 조회 실패:', error);
       return {
         success: false,
         data: [] as Plan[],
-        error: '요금제 목록을 불러오는데 실패했습니다.'
+        error: errorMessage
       };
     }
   }
@@ -85,11 +127,12 @@ class BillingService {
         data: response.data
       };
     } catch (error) {
+      const errorMessage = handleAxiosError(error, '현재 요금제 정보를 불러오는데 실패했습니다.');
       console.error('현재 요금제 조회 실패:', error);
       return {
         success: false,
         data: {} as CurrentPlan,
-        error: '현재 요금제 정보를 불러오는데 실패했습니다.'
+        error: errorMessage
       };
     }
   }
@@ -110,11 +153,12 @@ class BillingService {
         data: response.data
       };
     } catch (error) {
+      const errorMessage = handleAxiosError(error, '사용량 히스토리를 불러오는데 실패했습니다.');
       console.error('사용량 히스토리 조회 실패:', error);
       return {
         success: false,
         data: [] as UsageHistory[],
-        error: '사용량 히스토리를 불러오는데 실패했습니다.'
+        error: errorMessage
       };
     }
   }
@@ -130,11 +174,12 @@ class BillingService {
         data: response.data
       };
     } catch (error) {
+      const errorMessage = handleAxiosError(error, '요금제 변경에 실패했습니다.');
       console.error('요금제 변경 실패:', error);
       return {
         success: false,
         data: {} as PlanChangeResponse,
-        error: '요금제 변경에 실패했습니다.'
+        error: errorMessage
       };
     }
   }
@@ -159,6 +204,7 @@ class BillingService {
         data: response.data
       };
     } catch (error) {
+      const errorMessage = handleAxiosError(error, '사용량 통계를 불러오는데 실패했습니다.');
       console.error('사용량 통계 조회 실패:', error);
       return {
         success: false,
@@ -166,7 +212,7 @@ class BillingService {
           current_month: { tokens_used: 0, api_calls: 0, overage_cost: 0 },
           last_month: { tokens_used: 0, api_calls: 0, overage_cost: 0 }
         },
-        error: '사용량 통계를 불러오는데 실패했습니다.'
+        error: errorMessage
       };
     }
   }
