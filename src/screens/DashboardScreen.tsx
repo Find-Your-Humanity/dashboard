@@ -226,7 +226,7 @@ const DashboardScreen: React.FC = () => {
                         variant="determinate" 
                         value={45} 
                         sx={{ 
-                          height: 16, 
+                          height: 20, 
                           borderRadius: 8,
                           backgroundColor: '#e0e0e0',
                           '& .MuiLinearProgress-bar': {
