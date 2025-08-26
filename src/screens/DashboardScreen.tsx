@@ -138,36 +138,55 @@ const DashboardScreen: React.FC = () => {
         </Box>
       </Box>
 
-      {/* Credit 사용량 */}
-      <Box sx={{ mb: 3 }}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Credit
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-              <Box sx={{ width: '100%', mb: 2 }}>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={75} 
-                  sx={{ 
-                    height: 10, 
-                    borderRadius: 5,
-                    backgroundColor: '#e0e0e0',
-                    '& .MuiLinearProgress-bar': {
-                      borderRadius: 5,
-                      backgroundColor: '#1976d2'
-                    }
-                  }} 
-                />
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                75%
+      {/* Credit 사용량 및 캡챠 레벨별 사용량 */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Credit 사용량
               </Typography>
-            </Box>
-          </CardContent>
-        </Card>
-      </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                <Box sx={{ width: '100%', mb: 2 }}>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={75} 
+                    sx={{ 
+                      height: 10, 
+                      borderRadius: 5,
+                      backgroundColor: '#e0e0e0',
+                      '& .MuiLinearProgress-bar': {
+                        borderRadius: 5,
+                        backgroundColor: '#1976d2'
+                      }
+                    }} 
+                  />
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  75%
+                </Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                캡챠 레벨별 사용량
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+                <Box sx={{ width: '100%', height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">
+                    도넛 차트가 여기에 표시됩니다
+                  </Typography>
+                </Box>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* 주요 메트릭 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
