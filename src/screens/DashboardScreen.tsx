@@ -154,7 +154,7 @@ const DashboardScreen: React.FC = () => {
       </Box>
 
       {/* Credit 사용량, Pro Credit 및 캡챠 레벨별 사용량 */}
-      <Grid container spacing={3} sx={{ mb: 3 }}>
+      <Grid container spacing={3} sx={{ mb: 3 }} alignItems="stretch">
         <Grid item xs={12} md={6}>
           <Grid container spacing={2} direction="column">
             <Grid item>
@@ -221,7 +221,7 @@ const DashboardScreen: React.FC = () => {
                     Pro Credit
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
-                    <Box sx={{ width: '80%', mb: 2, position: 'relative' }}>
+                    <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
                       <LinearProgress 
                         variant="determinate" 
                         value={45} 
@@ -261,6 +261,7 @@ const DashboardScreen: React.FC = () => {
         
         <Grid item xs={12} md={6}>
           <Card sx={{ 
+            height: '100%',
             transition: 'all 0.3s ease-in-out',
             '&:hover': {
               transform: 'translateY(-4px)',
