@@ -96,7 +96,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           variant="caption" 
           style={{ 
             color: '#9e9e9e', 
-            fontSize: '12px', 
+            fontSize: '10px', 
             fontWeight: 400,
             textTransform: 'uppercase',
             letterSpacing: '0.5px'
