@@ -19,7 +19,7 @@ import {
   CheckCircle as SuccessIcon,
   Error as ErrorIcon,
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { dashboardService } from '../services/dashboardService';
 import { DashboardAnalytics, CaptchaStats } from '../types';
 import { formatNumber, formatPercentage, formatResponseTime } from '../utils';
@@ -77,6 +77,14 @@ const DashboardScreen: React.FC = () => {
     { time: '12:00', requests: 125, success: 118 },
     { time: '16:00', requests: 156, success: 148 },
     { time: '20:00', requests: 89, success: 84 },
+  ];
+
+  const mockLevelData = [
+    { name: 'Level 1', value: 35, color: '#8884d8' },
+    { name: 'Level 2', value: 25, color: '#82ca9d' },
+    { name: 'Level 3', value: 20, color: '#ffc658' },
+    { name: 'Level 4', value: 15, color: '#ff7300' },
+    { name: 'Level 5', value: 5, color: '#d62728' },
   ];
 
   const StatCard = ({ title, value, icon, color, subtitle }: {
@@ -147,24 +155,37 @@ const DashboardScreen: React.FC = () => {
                 Credit 사용량
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
-                <Box sx={{ width: '100%', mb: 2 }}>
+                <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography variant="caption" color="text.secondary">0</Typography>
+                    <Typography variant="caption" color="text.secondary">100</Typography>
+                  </Box>
                   <LinearProgress 
                     variant="determinate" 
                     value={75} 
                     sx={{ 
-                      height: 10, 
-                      borderRadius: 5,
+                      height: 16, 
+                      borderRadius: 8,
                       backgroundColor: '#e0e0e0',
                       '& .MuiLinearProgress-bar': {
-                        borderRadius: 5,
+                        borderRadius: 8,
                         backgroundColor: '#1976d2'
                       }
                     }} 
                   />
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{
+                      position: 'absolute',
+                      bottom: -20,
+                      left: '75%',
+                      transform: 'translateX(-50%)'
+                    }}
+                  >
+                    75%
+                  </Typography>
                 </Box>
-                <Typography variant="body2" color="text.secondary">
-                  75%
-                </Typography>
               </Box>
             </CardContent>
           </Card>
@@ -178,15 +199,84 @@ const DashboardScreen: React.FC = () => {
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
                 <Box sx={{ width: '100%', height: 200, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <Typography variant="body2" color="text.secondary">
-                    도넛 차트가 여기에 표시됩니다
-                  </Typography>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={mockLevelData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={40}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                      >
+                        {mockLevelData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Box>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, mt: 1 }}>
+                  {mockLevelData.map((entry, index) => (
+                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Box sx={{ width: 12, height: 12, backgroundColor: entry.color, borderRadius: '50%' }} />
+                      <Typography variant="caption" color="text.secondary">
+                        {entry.name}: {entry.value}%
+                      </Typography>
+                    </Box>
+                  ))}
                 </Box>
               </Box>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
+      {/* Pro Credit */}
+      <Box sx={{ mb: 3 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Pro Credit
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+              <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="caption" color="text.secondary">0</Typography>
+                  <Typography variant="caption" color="text.secondary">100</Typography>
+                </Box>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={45} 
+                  sx={{ 
+                    height: 16, 
+                    borderRadius: 8,
+                    backgroundColor: '#e0e0e0',
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 8,
+                      backgroundColor: '#9c27b0'
+                    }
+                  }} 
+                />
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary"
+                  sx={{
+                    position: 'absolute',
+                    bottom: -20,
+                    left: '45%',
+                    transform: 'translateX(-50%)'
+                  }}
+                >
+                  45%
+                </Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
 
       {/* 주요 메트릭 */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
