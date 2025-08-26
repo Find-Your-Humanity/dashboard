@@ -1,12 +1,10 @@
 import React from 'react';
 import {
-  Box,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Toolbar,
   Typography,
   Divider,
   Skeleton,
@@ -53,20 +51,20 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   
   // 기본 메뉴 항목 (모든 사용자)
   const baseMenuItems = [
-    { id: 'dashboard', label: '대시보드', path: `${base}/dashboard`, icon: <DashboardIcon /> },
-    { id: 'analytics', label: '분석', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
+    { id: 'dashboard', label: 'Dashboard', path: `${base}/dashboard`, icon: <DashboardIcon /> },
+    { id: 'analytics', label: 'Analytics', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
   ];
 
   // 관리자 전용 메뉴 항목
   const adminMenuItems = [
-    { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
-    { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
-    { id: 'requests', label: '요청사항', path: `${base}/requests`, icon: <EmailIcon /> },
-    { id: 'request-status', label: '요청 상태', path: `${base}/request-status`, icon: <TimelineIcon /> },
+    { id: 'users', label: 'Users', path: `${base}/users`, icon: <PeopleIcon /> },
+    { id: 'plans', label: 'Plans', path: `${base}/plans`, icon: <PaymentIcon /> },
+    { id: 'requests', label: 'Requests', path: `${base}/requests`, icon: <EmailIcon /> },
+    { id: 'request-status', label: 'Request Status', path: `${base}/request-status`, icon: <TimelineIcon /> },
   ];
 
   // 설정 메뉴 (모든 사용자)
-  const settingsMenuItem = { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> };
+  const settingsMenuItem = { id: 'settings', label: 'Settings', path: `${base}/settings`, icon: <SettingsIcon /> };
 
   // 최종 메뉴 구성
   const menuItems = [
@@ -82,19 +80,32 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   };
 
   return (
-    <Box>
-      <Toolbar>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SecurityIcon sx={{ color: 'primary.main' }} />
-          <Typography variant="h6" noWrap sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-            Real
-          </Typography>
-        </Box>
-      </Toolbar>
+    <div style={{ 
+      backgroundColor: 'white', 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column',
+      padding: '16px 0'
+    }}>
+      {/* MENU 라벨 */}
+      <div style={{ 
+        padding: '0 24px 16px 24px'
+      }}>
+        <Typography 
+          variant="caption" 
+          style={{ 
+            color: '#9e9e9e', 
+            fontSize: '12px', 
+            fontWeight: 400,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}
+        >
+          MENU
+        </Typography>
+      </div>
 
-      <Divider />
-
-      <List>
+      <List style={{ padding: '8px 0', flex: 1 }}>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -102,25 +113,38 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
               <ListItemButton
                 onClick={() => handleItemClick(item.path)}
                 selected={isActive}
+                style={{
+                  margin: '0 16px 8px 16px',
+                  borderRadius: '8px',
+                  padding: '12px 16px',
+                  backgroundColor: isActive ? '#424242' : 'transparent',
+                  color: isActive ? 'white' : '#757575',
+                  transition: 'all 0.2s ease',
+                }}
                 sx={{
-                  mx: 1,
-                  mb: 0.5,
-                  borderRadius: 1,
-                  '&.Mui-selected': {
-                    bgcolor: 'primary.main',
-                    color: 'primary.contrastText',
-                    '&:hover': { bgcolor: 'primary.dark' },
-                    '& .MuiListItemIcon-root': { color: 'primary.contrastText' },
+                  '&:hover': { 
+                    backgroundColor: isActive ? '#424242' : '#f5f5f5',
+                    color: isActive ? 'white' : '#424242'
                   },
-                  '&:hover': { bgcolor: isActive ? 'primary.main' : 'action.hover' },
+                  '& .MuiListItemIcon-root': { 
+                    color: isActive ? 'white' : '#757575',
+                    minWidth: 40
+                  },
                 }}
               >
-                <ListItemIcon sx={{ color: isActive ? 'inherit' : 'text.secondary', minWidth: 40 }}>
+                <ListItemIcon style={{ minWidth: 40 }}>
                   {item.icon}
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}
-                  primaryTypographyProps={{ variant: 'body2', fontWeight: isActive ? 'medium' : 'regular' }}
+                  primaryTypographyProps={{ 
+                    variant: 'body2', 
+                    style: { 
+                      fontSize: '13px', 
+                      fontWeight: isActive ? 500 : 300,
+                      color: 'inherit'
+                    }
+                  }}
                 />
               </ListItemButton>
             </ListItem>
@@ -132,8 +156,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           <>
             {adminMenuItems.map((item) => (
               <ListItem key={`skeleton-${item.id}`} disablePadding>
-                <ListItemButton disabled sx={{ mx: 1, mb: 0.5, borderRadius: 1 }}>
-                  <ListItemIcon sx={{ minWidth: 40 }}>
+                <ListItemButton disabled style={{ margin: '0 16px 8px 16px', borderRadius: '8px' }}>
+                  <ListItemIcon style={{ minWidth: 40 }}>
                     <Skeleton variant="circular" width={24} height={24} />
                   </ListItemIcon>
                   <ListItemText
@@ -146,14 +170,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
         )}
       </List>
 
-      <Divider sx={{ mt: 2 }} />
-
-      <Box sx={{ p: 2, textAlign: 'center' }}>
-        <Typography variant="caption" color="text.secondary">
+      <div style={{ padding: '16px 24px', textAlign: 'center' }}>
+        <Typography 
+          variant="caption" 
+          style={{ 
+            color: '#9e9e9e', 
+            fontSize: '11px', 
+            fontWeight: 400 
+          }}
+        >
           v1.0.0
         </Typography>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 
