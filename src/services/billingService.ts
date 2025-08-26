@@ -8,7 +8,8 @@ export interface Plan {
   price: number;
   request_limit: number;
   description: string;
-  features: string[];
+  // 백엔드에서는 dict(JSON) 형태를 반환하므로 호환 타입으로 둔다
+  features: string[] | Record<string, unknown>;
   rate_limit_per_minute: number;
   is_popular: boolean;
   sort_order: number;
@@ -121,14 +122,22 @@ class BillingService {
   // 현재 사용자의 요금제 정보 조회
   async getCurrentPlan(): Promise<ApiResponse<CurrentPlan>> {
     try {
-      const response = await apiClient.get('/api/billing/current-plan');
+      // 쿠키 전송을 명시적으로 보장
+      const response = await apiClient.get('/api/billing/current-plan', { withCredentials: true });
       return {
         success: true,
         data: response.data
       };
     } catch (error) {
       const errorMessage = handleAxiosError(error, '현재 요금제 정보를 불러오는데 실패했습니다.');
-      console.error('현재 요금제 조회 실패:', error);
+      // 서버 응답 전문을 함께 출력하여 디버깅 가시성 향상
+      const anyErr = error as any;
+      console.error('현재 요금제 조회 실패:', {
+        message: errorMessage,
+        status: anyErr?.response?.status,
+        data: anyErr?.response?.data,
+        headers: anyErr?.response?.headers,
+      });
       return {
         success: false,
         data: {} as CurrentPlan,
