@@ -8,6 +8,7 @@ import {
   IconButton,
   Button,
   Chip,
+  LinearProgress,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -112,31 +113,60 @@ const DashboardScreen: React.FC = () => {
   return (
     <Box>
       {/* 헤더 */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Dashboard
-          </Typography>
-          <Chip
-            label="정상 운영"
-            color="success"
-            variant="outlined"
-            icon={<SuccessIcon />}
-            size="small"
-          />
+      <Box sx={{ display: 'flex', flexDirection: 'column', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Dashboard
+            </Typography>
+            <Chip
+              label="정상 운영"
+              color="success"
+              variant="outlined"
+              icon={<SuccessIcon />}
+              size="small"
+            />
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Typography variant="caption" color="text.secondary">
+              마지막 업데이트: {lastUpdated.toLocaleTimeString()}
+            </Typography>
+            <IconButton onClick={loadDashboardData} disabled={loading}>
+              <RefreshIcon />
+            </IconButton>
+          </Box>
         </Box>
       </Box>
 
-      {/* 업데이트 정보 */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <Typography variant="caption" color="text.secondary">
-            마지막 업데이트: {lastUpdated.toLocaleTimeString()}
-          </Typography>
-          <IconButton onClick={loadDashboardData} disabled={loading}>
-            <RefreshIcon />
-          </IconButton>
-        </Box>
+      {/* Credit 사용량 */}
+      <Box sx={{ mb: 3 }}>
+        <Card>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Credit
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 2 }}>
+              <Box sx={{ width: '100%', mb: 2 }}>
+                <LinearProgress 
+                  variant="determinate" 
+                  value={75} 
+                  sx={{ 
+                    height: 10, 
+                    borderRadius: 5,
+                    backgroundColor: '#e0e0e0',
+                    '& .MuiLinearProgress-bar': {
+                      borderRadius: 5,
+                      backgroundColor: '#1976d2'
+                    }
+                  }} 
+                />
+              </Box>
+              <Typography variant="body2" color="text.secondary">
+                75%
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
       </Box>
 
       {/* 주요 메트릭 */}
