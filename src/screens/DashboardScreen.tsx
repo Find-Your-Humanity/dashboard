@@ -113,14 +113,22 @@ const DashboardScreen: React.FC = () => {
     <Box>
       {/* 헤더 */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography variant="h4" component="h1" gutterBottom>
             Dashboard
           </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Real Captcha 서비스 모니터링 및 관리
-          </Typography>
+          <Chip
+            label="정상 운영"
+            color="success"
+            variant="outlined"
+            icon={<SuccessIcon />}
+            size="small"
+          />
         </Box>
+      </Box>
+
+      {/* 업데이트 정보 */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Typography variant="caption" color="text.secondary">
             마지막 업데이트: {lastUpdated.toLocaleTimeString()}
@@ -129,25 +137,6 @@ const DashboardScreen: React.FC = () => {
             <RefreshIcon />
           </IconButton>
         </Box>
-      </Box>
-
-      {/* 시스템 상태 */}
-      <Box sx={{ mb: 3 }}>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="h6">
-                시스템 상태
-              </Typography>
-              <Chip
-                label="정상 운영"
-                color="success"
-                variant="outlined"
-                icon={<SuccessIcon />}
-              />
-            </Box>
-          </CardContent>
-        </Card>
       </Box>
 
       {/* 주요 메트릭 */}
