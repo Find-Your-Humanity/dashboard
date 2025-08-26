@@ -221,7 +221,7 @@ const DashboardScreen: React.FC = () => {
                     Pro Credit
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
-                    <Box sx={{ width: '60%', mb: 2, position: 'relative' }}>
+                    <Box sx={{ width: '80%', mb: 2, position: 'relative' }}>
                       <LinearProgress 
                         variant="determinate" 
                         value={45} 
