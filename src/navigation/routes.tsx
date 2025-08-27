@@ -7,7 +7,6 @@ import PlansScreen from '../screens/PlansScreen';
 import RequestsScreen from '../screens/RequestsScreen';
 import RequestStatusScreen from '../screens/RequestStatusScreen';
 import BillingScreen from '../screens/BillingScreen';
-import ApiKeysScreen from '../screens/ApiKeysScreen';
 
 export type AppRoute = {
   path: string;
@@ -20,7 +19,6 @@ export type AppRoute = {
 export const TENANT_ROUTES: AppRoute[] = [
   { id: 'dashboard', label: '대시보드', path: '/app/dashboard', element: <DashboardScreen />, showInMenu: true },
   { id: 'analytics', label: '분석', path: '/app/analytics', element: <AnalyticsScreen />, showInMenu: true },
-  { id: 'api-keys', label: 'API 키', path: '/app/api-keys', element: <ApiKeysScreen />, showInMenu: true },
   { id: 'billing', label: '요금제', path: '/app/billing', element: <BillingScreen />, showInMenu: true },
   { id: 'settings', label: '설정', path: '/app/settings', element: <SettingsScreen />, showInMenu: true },
 ];

@@ -11,9 +11,7 @@
     "@mui/icons-material": "^5.11.0",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
-    "recharts": "^2.5.0",
-    "@mui/x-date-pickers": "^6.0.0",
-    "date-fns": "^2.29.0"
+    "recharts": "^2.5.0"
   },
   "scripts": {
     "start": "react-scripts start",

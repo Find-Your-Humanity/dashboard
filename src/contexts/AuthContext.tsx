@@ -57,56 +57,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // 애플리케이션 시작 시 인증 상태 확인 (로컬 스토리지 + 쿠키)
     const initAuth = async () => {
-      console.log('🔍 인증 초기화 시작');
       dispatch({ type: 'LOGIN_START' });
       
       // 1. 로컬 스토리지 확인
       const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       const userData = localStorage.getItem(STORAGE_KEYS.USER_DATA);
       
-      console.log('📦 로컬 스토리지 데이터:', { 
-        hasToken: !!token, 
-        hasUserData: !!userData,
-        userData: userData ? JSON.parse(userData) : null 
-      });
-      
       if (token && userData) {
         try {
           const user = JSON.parse(userData);
-          console.log('✅ 로컬 데이터로 즉시 로그인 상태 설정:', user);
           // 로컬 데이터가 있으면 즉시 로그인 상태로 설정
           dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
           
           // 백그라운드에서 서버 검증
           setTimeout(async () => {
-            console.log('🔄 서버 검증 시작');
             try {
               const response = await authService.getCurrentUser();
-              console.log('📡 서버 응답:', response);
               if (response.success && response.data && response.data.user) {
                 // 서버 데이터로 업데이트
                 const serverUser = response.data.user;
                 const serverToken = response.data.access_token || token;
                 
-                console.log('✅ 서버 검증 성공, 데이터 업데이트:', serverUser);
                 localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, serverToken);
                 localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(serverUser));
                 
                 dispatch({ type: 'REFRESH_SUCCESS', payload: { user: serverUser, token: serverToken } });
               } else {
                 // 서버 검증 실패 시 로컬 데이터 정리
-                console.log('❌ 서버 검증 실패, 로컬 데이터 정리');
+                console.log('서버 검증 실패, 로컬 데이터 정리');
                 localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
                 localStorage.removeItem(STORAGE_KEYS.USER_DATA);
                 dispatch({ type: 'LOGOUT' });
               }
             } catch (error) {
-              console.warn('⚠️ 서버 검증 중 오류:', error);
+              console.warn('서버 검증 중 오류:', error);
               // 네트워크 오류 시에도 로컬 데이터 정리
               if (error && typeof error === 'object' && 'response' in error) {
                 const axiosError = error as any;
                 if (axiosError.response?.status === 401) {
-                  console.log('❌ 401 오류로 로컬 데이터 정리');
                   localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
                   localStorage.removeItem(STORAGE_KEYS.USER_DATA);
                   dispatch({ type: 'LOGOUT' });
@@ -117,21 +105,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           return;
         } catch (error) {
-          console.log('❌ 로컬 데이터 파싱 실패, 정리');
+          console.log('로컬 데이터 파싱 실패, 정리');
           localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
           localStorage.removeItem(STORAGE_KEYS.USER_DATA);
         }
       }
+      
       // 2. 쿠키 기반 자동 로그인 시도
-      console.log('🍪 쿠키 기반 자동 로그인 시도');
       try {
         const response = await authService.getCurrentUser();
-        console.log('📡 쿠키 기반 인증 응답:', response);
         if (response.success && response.data && response.data.user) {
           const user = response.data.user;
           const token = response.data.access_token || '';
           
-          console.log('✅ 쿠키 기반 인증 성공:', user);
           // 로컬 스토리지에도 저장
           if (token) {
             localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
@@ -142,12 +128,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
       } catch (error) {
-        console.warn('❌ 쿠키 기반 자동 로그인 실패:', error);
+        console.warn('쿠키 기반 자동 로그인 실패:', error);
         // 401 에러인 경우 localStorage도 정리
         if (error && typeof error === 'object' && 'response' in error) {
           const axiosError = error as any;
           if (axiosError.response?.status === 401) {
-            console.log('❌ 401 오류로 쿠키 기반 인증 실패');
             localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
             localStorage.removeItem(STORAGE_KEYS.USER_DATA);
           }
@@ -155,7 +140,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // 인증 실패 시 로딩 상태 해제
-      console.log('❌ 모든 인증 시도 실패, 로그인 실패 상태로 설정');
       dispatch({ type: 'LOGIN_FAILURE' });
     };
     
@@ -167,7 +151,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (event.data.type === 'AUTH_TOKEN' && event.data.token && event.data.user) {
-        console.log('📨 PostMessage로 인증 토큰 수신:', event.data.user);
         // 기존 로컬 데이터 정리 후 새 데이터 저장
         localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.USER_DATA);
@@ -180,24 +163,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
         console.log('PostMessage로 자동 로그인 완료:', user);
-        
-        // 서버 검증도 즉시 수행
-        setTimeout(async () => {
-          try {
-            const response = await authService.getCurrentUser();
-            if (response.success && response.data && response.data.user) {
-              const serverUser = response.data.user;
-              const serverToken = response.data.access_token || token;
-              
-              localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, serverToken);
-              localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(serverUser));
-              
-              dispatch({ type: 'REFRESH_SUCCESS', payload: { user: serverUser, token: serverToken } });
-            }
-          } catch (error) {
-            console.warn('PostMessage 후 서버 검증 실패:', error);
-          }
-        }, 1000);
       }
     };
     
@@ -214,10 +179,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'LOGIN_START' });
     
     try {
-      // 로그인 전에 기존 데이터 정리
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-      localStorage.removeItem(STORAGE_KEYS.USER_DATA);
-      
       const response = await authService.login(credentials);
       
       if (response.success) {
@@ -299,4 +260,5 @@ export function useAuth(): AuthContextType {
   }
   
   return context;
+}
 }
