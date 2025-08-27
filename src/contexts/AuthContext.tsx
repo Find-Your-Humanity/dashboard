@@ -163,6 +163,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
         console.log('PostMessage로 자동 로그인 완료:', user);
+        
+        // 서버 검증도 즉시 수행
+        setTimeout(async () => {
+          try {
+            const response = await authService.getCurrentUser();
+            if (response.success && response.data && response.data.user) {
+              const serverUser = response.data.user;
+              const serverToken = response.data.access_token || token;
+              
+              localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, serverToken);
+              localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(serverUser));
+              
+              dispatch({ type: 'REFRESH_SUCCESS', payload: { user: serverUser, token: serverToken } });
+            }
+          } catch (error) {
+            console.warn('PostMessage 후 서버 검증 실패:', error);
+          }
+        }, 1000);
       }
     };
     
@@ -179,6 +197,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'LOGIN_START' });
     
     try {
+      // 로그인 전에 기존 데이터 정리
+      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+      
       const response = await authService.login(credentials);
       
       if (response.success) {
