@@ -69,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // 로컬 데이터가 있으면 즉시 로그인 상태로 설정
           dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
           
-          // 백그라운드에서 서버 검증
+          // 백그라운드에서 서버 검증 (로딩 상태는 이미 해제됨)
           setTimeout(async () => {
             try {
               const response = await authService.getCurrentUser();

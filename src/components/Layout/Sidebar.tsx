@@ -33,7 +33,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
 
   // 실제 사용자 권한 확인 - 더 엄격한 체크
   const isUserAdmin = React.useMemo(() => {
-    if (loading || !user) return false;
+    // 로딩 중이어도 사용자 정보가 있으면 권한 확인
+    if (!user) return false;
     
     // 명시적으로 관리자 권한이 있는 경우만 true
     return (
@@ -64,11 +65,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   // 설정 메뉴 (모든 사용자)
   const settingsMenuItem = { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> };
 
-  // 최종 메뉴 구성
+  // 최종 메뉴 구성 - 로딩 중이어도 사용자 정보가 있으면 관리자 메뉴 표시
   const menuItems = [
     ...baseMenuItems,
-    // 로딩 중이거나 사용자 정보가 없으면 관리자 메뉴 숨김
-    ...(loading ? [] : isUserAdmin ? adminMenuItems : []),
+    // 사용자 정보가 있고 관리자 권한이 있으면 관리자 메뉴 표시
+    ...(user && isUserAdmin ? adminMenuItems : []),
     settingsMenuItem,
   ];
 
@@ -149,8 +150,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           );
         })}
         
-        {/* 로딩 중일 때 관리자 메뉴 스켈레톤 */}
-        {loading && (
+        {/* 로딩 중이고 사용자 정보가 없을 때만 스켈레톤 표시 */}
+        {loading && !user && (
           <>
             {adminMenuItems.map((item) => (
               <ListItem key={`skeleton-${item.id}`} disablePadding>
