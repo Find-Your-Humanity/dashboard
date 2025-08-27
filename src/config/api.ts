@@ -1,6 +1,6 @@
 // API 기본 설정
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || 'https://gateway.realcatcha.com',
+  BASE_URL: 'https://gateway.realcatcha.com', // 강제로 HTTPS 사용
   TIMEOUT: 10000,
   RETRY_ATTEMPTS: 3,
   RETRY_DELAY: 1000,
