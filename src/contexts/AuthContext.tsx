@@ -122,7 +122,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           localStorage.removeItem(STORAGE_KEYS.USER_DATA);
         }
       }
-      
       // 2. 쿠키 기반 자동 로그인 시도
       console.log('🍪 쿠키 기반 자동 로그인 시도');
       try {
@@ -156,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // 인증 실패 시 로딩 상태 해제
+      console.log('❌ 모든 인증 시도 실패, 로그인 실패 상태로 설정');
       dispatch({ type: 'LOGIN_FAILURE' });
     };
     
@@ -167,6 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       if (event.data.type === 'AUTH_TOKEN' && event.data.token && event.data.user) {
+        console.log('📨 PostMessage로 인증 토큰 수신:', event.data.user);
         // 기존 로컬 데이터 정리 후 새 데이터 저장
         localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.USER_DATA);
