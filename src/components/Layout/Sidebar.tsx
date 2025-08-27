@@ -43,11 +43,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
     );
   }, [user, loading]);
   
-  // 두 가지 모드: admin / tenant
-  const isAdminPath = location.pathname.startsWith('/admin');
-  
-  // 일반 사용자는 항상 /app 경로 사용, 관리자만 /admin 경로 사용
-  const base = (isUserAdmin && isAdminPath) ? '/admin' : '/app';
+  // 관리자는 /admin 경로, 일반 사용자는 /app 경로 사용
+  const base = isUserAdmin ? '/admin' : '/app';
   
   // 기본 메뉴 항목 (모든 사용자)
   const baseMenuItems = [
