@@ -147,10 +147,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       // 인증 실패 시 로딩 상태 해제
+      console.log('모든 인증 방법 실패, 로그인 필요 상태로 설정');
       dispatch({ type: 'LOGIN_FAILURE' });
     };
     
-    // 3. PostMessage 리스너 - 부모 창에서 토큰 받기
+    // 3. URL 파라미터 기반 인증 (시크릿 모드 대응)
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenParam = urlParams.get('token');
+    const userParam = urlParams.get('user');
+    
+    if (tokenParam && userParam) {
+      try {
+        const user = JSON.parse(decodeURIComponent(userParam));
+        localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, tokenParam);
+        localStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+        dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token: tokenParam } });
+        console.log('URL 파라미터로 자동 로그인 완료:', user);
+        
+        // URL에서 파라미터 제거
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        return;
+      } catch (error) {
+        console.warn('URL 파라미터 파싱 실패:', error);
+      }
+    }
+    
+    // 4. PostMessage 리스너 - 부모 창에서 토큰 받기
     const handlePostMessage = (event: MessageEvent) => {
       // 보안: 신뢰할 수 있는 도메인에서만 메시지 수신
       if (event.origin !== 'https://www.realcatcha.com' && event.origin !== 'https://realcatcha.com') {
