@@ -661,3 +661,11 @@ const PlansScreen: React.FC = () => {
 };
 
 export default PlansScreen;
+
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+};
+
+export default PlansScreen;
