@@ -17,7 +17,11 @@ const RootRedirect: React.FC = () => {
   }
   
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // 별도의 /login 라우트가 없으므로 부모 창에 로그인 요청만 보내고 현재 경로 유지
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'NEED_LOGIN' }, 'https://www.realcatcha.com');
+    }
+    return null;
   }
   
   // 관리자면 admin 대시보드로, 아니면 app 대시보드로
