@@ -64,6 +64,7 @@ export interface Plan {
   is_popular: boolean;
   sort_order: number;
   subscriber_count?: number;
+  active_subscribers?: number;
   created_at?: string;
   updated_at?: string;
 }

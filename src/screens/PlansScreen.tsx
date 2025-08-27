@@ -286,7 +286,9 @@ const PlansScreen: React.FC = () => {
                   <TableCell>타입</TableCell>
                   <TableCell>가격</TableCell>
                   <TableCell>요청 제한</TableCell>
-                  <TableCell>구독자</TableCell>
+                  <TableCell>구독자
+                    {/* 설명 툴팁 대체: 열 머리글에 보조 수치 표기 */}
+                  </TableCell>
                   <TableCell>상태</TableCell>
                   <TableCell align="center">작업</TableCell>
                 </TableRow>
@@ -329,6 +331,12 @@ const PlansScreen: React.FC = () => {
                         <Typography variant="body2" fontWeight="bold">
                           {plan.subscriber_count || 0}명
                         </Typography>
+                        <Chip 
+                          label={`구독: ${plan.active_subscribers ?? 0}`}
+                          size="small"
+                          color="default"
+                          variant="outlined"
+                        />
                         {plan.subscriber_count && plan.subscriber_count > 0 && (
                           <IconButton
                             size="small"

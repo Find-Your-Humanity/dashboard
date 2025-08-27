@@ -58,14 +58,14 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
 
   // 관리자 전용 메뉴 항목
   const adminMenuItems = [
-    { id: 'users', label: 'Users', path: `${base}/users`, icon: <PeopleIcon /> },
-    { id: 'plans', label: 'Plans', path: `${base}/plans`, icon: <PaymentIcon /> },
-    { id: 'requests', label: 'Requests', path: `${base}/requests`, icon: <EmailIcon /> },
-    { id: 'request-status', label: 'Request Status', path: `${base}/request-status`, icon: <TimelineIcon /> },
+    { id: 'users', label: '사용자 관리', path: `${base}/users`, icon: <PeopleIcon /> },
+    { id: 'plans', label: '요금제 관리', path: `${base}/plans`, icon: <PaymentIcon /> },
+    { id: 'requests', label: '요청사항', path: `${base}/requests`, icon: <EmailIcon /> },
+    { id: 'request-status', label: '요청 상태', path: `${base}/request-status`, icon: <TimelineIcon /> },
   ];
 
   // 설정 메뉴 (모든 사용자)
-  const settingsMenuItem = { id: 'settings', label: 'Settings', path: `${base}/settings`, icon: <SettingsIcon /> };
+  const settingsMenuItem = { id: 'settings', label: '설정', path: `${base}/settings`, icon: <SettingsIcon /> };
 
   // 최종 메뉴 구성
   const menuItems = [
