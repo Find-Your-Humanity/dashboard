@@ -111,12 +111,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      // 2. 쿠키 기반 자동 로그인 시도
+      // 2. 쿠키 기반 자동 로그인 시도 (더 강화된 로직)
       try {
+        console.log('쿠키 기반 자동 로그인 시도 중...');
         const response = await authService.getCurrentUser();
+        console.log('쿠키 기반 자동 로그인 응답:', response);
+        
         if (response.success && response.data && response.data.user) {
           const user = response.data.user;
           const token = response.data.access_token || '';
+          
+          console.log('쿠키 기반 자동 로그인 성공:', user);
           
           // 로컬 스토리지에도 저장
           if (token) {
@@ -126,6 +131,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           dispatch({ type: 'REFRESH_SUCCESS', payload: { user, token } });
           return;
+        } else {
+          console.warn('쿠키 기반 자동 로그인 응답이 유효하지 않음:', response);
         }
       } catch (error) {
         console.warn('쿠키 기반 자동 로그인 실패:', error);
