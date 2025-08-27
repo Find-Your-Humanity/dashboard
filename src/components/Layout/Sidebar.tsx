@@ -50,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const baseMenuItems = [
     { id: 'dashboard', label: 'Dashboard', path: `${base}/dashboard`, icon: <DashboardIcon /> },
     { id: 'analytics', label: 'Analytics', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
+    { id: 'api-keys', label: 'API 키', path: `${base}/api-keys`, icon: <SecurityIcon /> },
     { id: 'billing', label: '요금제', path: `${base}/billing`, icon: <PaymentIcon /> },
   ];
 
