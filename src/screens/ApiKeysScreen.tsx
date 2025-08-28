@@ -121,9 +121,24 @@ const ApiKeysScreen: React.FC = () => {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    showSnackbar('클립보드에 복사되었습니다.', 'success');
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showSnackbar('클립보드에 복사되었습니다.', 'success');
+    } catch (error) {
+      // fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showSnackbar('클립보드에 복사되었습니다.', 'success');
+      } catch (fallbackError) {
+        showSnackbar('복사에 실패했습니다.', 'error');
+      }
+      document.body.removeChild(textArea);
+    }
   };
 
   const showSnackbar = (message: string, severity: 'success' | 'error') => {
@@ -207,7 +222,7 @@ const ApiKeysScreen: React.FC = () => {
                           <Tooltip title="복사">
                             <IconButton
                               size="small"
-                              onClick={() => copyToClipboard(key.key_id)}
+                              onClick={async () => await copyToClipboard(key.key_id)}
                             >
                               <CopyIcon fontSize="small" />
                             </IconButton>
@@ -322,7 +337,7 @@ const ApiKeysScreen: React.FC = () => {
                 size="small"
               />
               <Tooltip title="복사">
-                <IconButton onClick={() => copyToClipboard(newlyCreatedKey?.api_key || '')}>
+                <IconButton onClick={async () => await copyToClipboard(newlyCreatedKey?.api_key || '')}>
                   <CopyIcon />
                 </IconButton>
               </Tooltip>
@@ -351,7 +366,7 @@ const ApiKeysScreen: React.FC = () => {
                 </IconButton>
               </Tooltip>
               <Tooltip title="복사">
-                <IconButton onClick={() => copyToClipboard(newlyCreatedKey?.secret_key || '')}>
+                <IconButton onClick={async () => await copyToClipboard(newlyCreatedKey?.secret_key || '')}>
                   <CopyIcon />
                 </IconButton>
               </Tooltip>
