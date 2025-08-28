@@ -11,6 +11,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  username?: string;   // 일반 로그인 사용자의 username
   role?: 'admin' | 'user';
   is_admin?: boolean | number;
   createdAt: string;

@@ -262,7 +262,7 @@ const UsersScreen: React.FC = () => {
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id} hover>
-                    <TableCell>{user.name || '-'}</TableCell>
+                    <TableCell>{user.name || user.username || '-'}</TableCell>
                     <TableCell>{maskEmail(user.email)}</TableCell>
                     <TableCell>{user.username}</TableCell>
                     <TableCell>
