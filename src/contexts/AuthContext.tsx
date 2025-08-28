@@ -123,6 +123,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN) || '';
           
           console.log('쿠키 기반 자동 로그인 성공:', user);
+          console.log('AuthContext: 사용자 권한 정보', {
+            is_admin: user.is_admin,
+            role: user.role,
+            type: typeof user.is_admin
+          });
           
           // 로컬 스토리지에도 저장
           if (token) {

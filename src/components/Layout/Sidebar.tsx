@@ -34,14 +34,27 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   // 실제 사용자 권한 확인 - 더 엄격한 체크
   const isUserAdmin = React.useMemo(() => {
     // 로딩 중이어도 사용자 정보가 있으면 권한 확인
-    if (!user) return false;
+    if (!user) {
+      console.log('Sidebar: 사용자 정보 없음');
+      return false;
+    }
+    
+    console.log('Sidebar: 사용자 정보 확인', {
+      user,
+      is_admin: user.is_admin,
+      role: user.role,
+      type: typeof user.is_admin
+    });
     
     // 명시적으로 관리자 권한이 있는 경우만 true
-    return (
+    const isAdmin = (
       user.is_admin === true || 
       user.is_admin === 1 || 
       user.role === 'admin'
     );
+    
+    console.log('Sidebar: 관리자 권한 확인 결과', isAdmin);
+    return isAdmin;
   }, [user, loading]);
   
   // 관리자는 /admin 경로, 일반 사용자는 /app 경로 사용
@@ -72,6 +85,15 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
     ...(user && isUserAdmin ? adminMenuItems : []),
     settingsMenuItem,
   ];
+  
+  console.log('Sidebar: 메뉴 구성', {
+    user: !!user,
+    isUserAdmin,
+    baseMenuItemsCount: baseMenuItems.length,
+    adminMenuItemsCount: adminMenuItems.length,
+    finalMenuItemsCount: menuItems.length,
+    base
+  });
 
   const handleItemClick = (path: string) => {
     navigate(path);
