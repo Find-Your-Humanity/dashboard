@@ -60,11 +60,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   // 관리자는 /admin 경로, 일반 사용자는 /app 경로 사용
   const base = isUserAdmin ? '/admin' : '/app';
   
-  // 기본 메뉴 항목 (모든 사용자)
+  // 기본 메뉴 항목 (일반 사용자만)
   const baseMenuItems = [
     { id: 'dashboard', label: 'Dashboard', path: `${base}/dashboard`, icon: <DashboardIcon /> },
     { id: 'analytics', label: 'Analytics', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
-    { id: 'billing', label: '요금제', path: `${base}/billing`, icon: <PaymentIcon /> },
+    // 요금제 메뉴는 일반 사용자에게만 표시 (관리자는 요금제 관리 메뉴 사용)
+    ...(isUserAdmin ? [] : [{ id: 'billing', label: '요금제', path: `${base}/billing`, icon: <PaymentIcon /> }]),
   ];
 
   // 관리자 전용 메뉴 항목
