@@ -19,7 +19,9 @@ const RootRedirect: React.FC = () => {
   if (!isAuthenticated) {
     // 별도의 /login 라우트가 없으므로 부모 창에 로그인 요청만 보내고 현재 경로 유지
     if (window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: 'NEED_LOGIN' }, 'https://realcatcha.com');
+      // 현재 origin을 기반으로 부모 창에 메시지 전송
+      const currentOrigin = window.location.origin;
+      window.parent.postMessage({ type: 'NEED_LOGIN' }, currentOrigin);
     }
     return null;
   }

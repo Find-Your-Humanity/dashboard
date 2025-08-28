@@ -177,7 +177,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 4. PostMessage 리스너 - 부모 창에서 토큰 받기
     const handlePostMessage = (event: MessageEvent) => {
       // 보안: 신뢰할 수 있는 도메인에서만 메시지 수신
-      if (event.origin !== 'https://realcatcha.com' && event.origin !== 'https://www.realcatcha.com') {
+      const currentOrigin = window.location.origin;
+      if (event.origin !== currentOrigin) {
         return;
       }
       
