@@ -116,6 +116,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('쿠키 기반 자동 로그인 시도 중...');
         const response = await authService.getCurrentUser();
         console.log('쿠키 기반 자동 로그인 응답:', response);
+        console.log('응답 구조 분석:', {
+          success: response.success,
+          hasData: !!response.data,
+          dataType: typeof response.data,
+          hasUser: !!(response.data && response.data.user),
+          userType: response.data ? typeof response.data.user : 'undefined'
+        });
         
         if (response.success && response.data && response.data.user) {
           const user = response.data.user;
