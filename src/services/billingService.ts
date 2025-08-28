@@ -101,7 +101,7 @@ function handleAxiosError(error: any, defaultMessage: string): string {
 class BillingService {
   async getCurrentPlan(): Promise<ApiResponse<CurrentPlan>> {
     try {
-      const response = await apiClient.get('/billing/current-plan');
+      const response = await apiClient.get('/api/billing/current-plan');
       return {
         success: true,
         data: response.data
@@ -117,7 +117,7 @@ class BillingService {
 
   async getAvailablePlans(): Promise<ApiResponse<Plan[]>> {
     try {
-      const response = await apiClient.get('/billing/plans');
+      const response = await apiClient.get('/api/billing/plans');
       return {
         success: true,
         data: response.data
@@ -133,7 +133,7 @@ class BillingService {
 
   async changePlan(planId: number): Promise<ApiResponse<PlanChangeResponse>> {
     try {
-      const response = await apiClient.post('/billing/change-plan', { plan_id: planId });
+      const response = await apiClient.post('/api/billing/change-plan', { plan_id: planId });
       return {
         success: true,
         data: response.data
@@ -150,7 +150,7 @@ class BillingService {
   async getUsageHistory(month?: string): Promise<ApiResponse<UsageHistory[]>> {
     try {
       const params = month ? { month } : {};
-      const response = await apiClient.get('/billing/usage-history', { params });
+      const response = await apiClient.get('/api/billing/usage-history', { params });
       return {
         success: true,
         data: response.data
@@ -166,7 +166,7 @@ class BillingService {
 
   async getBillingHistory(): Promise<ApiResponse<any[]>> {
     try {
-      const response = await apiClient.get('/billing/history');
+      const response = await apiClient.get('/api/billing/history');
       return {
         success: true,
         data: response.data
