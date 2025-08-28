@@ -119,7 +119,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (response.success && response.data && response.data.user) {
           const user = response.data.user;
-          const token = response.data.access_token || '';
+          // /auth/me 엔드포인트는 access_token을 반환하지 않으므로 기존 토큰 사용
+          const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN) || '';
           
           console.log('쿠키 기반 자동 로그인 성공:', user);
           
@@ -176,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 4. PostMessage 리스너 - 부모 창에서 토큰 받기
     const handlePostMessage = (event: MessageEvent) => {
       // 보안: 신뢰할 수 있는 도메인에서만 메시지 수신
-      if (event.origin !== 'https://www.realcatcha.com' && event.origin !== 'https://realcatcha.com') {
+      if (event.origin !== 'https://realcatcha.com' && event.origin !== 'https://www.realcatcha.com') {
         return;
       }
       
