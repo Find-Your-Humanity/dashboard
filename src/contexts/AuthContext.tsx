@@ -124,8 +124,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           userType: response.data ? typeof response.data.user : 'undefined'
         });
         
-        if (response.success && response.data && response.data.user) {
-          const user = response.data.user;
+        if (response.success && (response.data?.user || (response as any).user)) {
+          // 백엔드 응답 구조에 따라 user 위치 확인
+          const user = response.data?.user || (response as any).user;
           // /auth/me 엔드포인트는 access_token을 반환하지 않으므로 기존 토큰 사용
           const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN) || '';
           
