@@ -18,6 +18,7 @@ import {
   Payment as PaymentIcon,
   Email as EmailIcon,
   Timeline as TimelineIcon,
+  VpnKey as VpnKeyIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -66,6 +67,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
     { id: 'analytics', label: 'Analytics', path: `${base}/analytics`, icon: <AnalyticsIcon /> },
     // 요금제 메뉴는 일반 사용자에게만 표시 (관리자는 요금제 관리 메뉴 사용)
     ...(isUserAdmin ? [] : [{ id: 'billing', label: '요금제', path: `${base}/billing`, icon: <PaymentIcon /> }]),
+    // API 키 메뉴는 일반 사용자에게만 표시
+    ...(isUserAdmin ? [] : [{ id: 'api-keys', label: 'API 키', path: `${base}/api-keys`, icon: <VpnKeyIcon /> }]),
   ];
 
   // 관리자 전용 메뉴 항목
