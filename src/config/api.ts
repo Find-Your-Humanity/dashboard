@@ -31,6 +31,12 @@ export const API_ENDPOINTS = {
     CONFIG: '/api/captcha/config', 
     PERFORMANCE: '/api/captcha/performance',
   },
+  API_KEYS: {
+    CREATE: '/api/keys/create',
+    LIST: '/api/keys/list',
+    TOGGLE: (keyId: string) => `/api/keys/${keyId}/toggle`,
+    DELETE: (keyId: string) => `/api/keys/${keyId}`,
+  },
 } as const;
 
 // HTTP Status Codes

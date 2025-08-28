@@ -1,6 +1,5 @@
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.realcatcha.com';
+import { apiClient } from './apiClient';
+import { API_ENDPOINTS } from '../config/api';
 
 export interface ApiKey {
   id: number;
@@ -57,15 +56,9 @@ class ApiKeyService {
 
   async createApiKey(data: CreateApiKeyRequest): Promise<CreateApiKeyResponse> {
     try {
-      const response = await axios.post<CreateApiKeyResponse>(
-        `${API_BASE_URL}/api/v1/keys/create`,
-        data,
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await apiClient.post<CreateApiKeyResponse>(
+        API_ENDPOINTS.API_KEYS.CREATE,
+        data
       );
       return response.data;
     } catch (error) {
@@ -75,11 +68,8 @@ class ApiKeyService {
 
   async getApiKeys(): Promise<ApiKey[]> {
     try {
-      const response = await axios.get<ApiKeyListResponse>(
-        `${API_BASE_URL}/api/v1/keys/list`,
-        {
-          withCredentials: true,
-        }
+      const response = await apiClient.get<ApiKeyListResponse>(
+        API_ENDPOINTS.API_KEYS.LIST
       );
       return response.data.api_keys;
     } catch (error) {
@@ -89,15 +79,9 @@ class ApiKeyService {
 
   async toggleApiKey(keyId: string, isActive: boolean): Promise<ApiResponse> {
     try {
-      const response = await axios.patch<ApiResponse>(
-        `${API_BASE_URL}/api/v1/keys/${keyId}/toggle`,
-        { is_active: isActive },
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+      const response = await apiClient.patch<ApiResponse>(
+        API_ENDPOINTS.API_KEYS.TOGGLE(keyId),
+        { is_active: isActive }
       );
       return response.data;
     } catch (error) {
@@ -107,11 +91,8 @@ class ApiKeyService {
 
   async deleteApiKey(keyId: string): Promise<ApiResponse> {
     try {
-      const response = await axios.delete<ApiResponse>(
-        `${API_BASE_URL}/api/v1/keys/${keyId}`,
-        {
-          withCredentials: true,
-        }
+      const response = await apiClient.delete<ApiResponse>(
+        API_ENDPOINTS.API_KEYS.DELETE(keyId)
       );
       return response.data;
     } catch (error) {
