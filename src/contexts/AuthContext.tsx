@@ -248,9 +248,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // 부모 창(웹사이트)에 로그아웃 알림
     if (window.parent && window.parent !== window) {
+      const parentOrigin = window.parent?.location?.origin || 'https://realcatcha.com';
       window.parent.postMessage({
         type: 'LOGOUT'
-      }, 'https://www.realcatcha.com');
+      }, parentOrigin);
     }
   };
 

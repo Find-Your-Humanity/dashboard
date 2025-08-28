@@ -57,7 +57,10 @@ export const RequireAuth: React.FC<GuardProps> = ({ children }) => {
         </Typography>
         <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
           <button
-            onClick={() => window.parent?.postMessage({ type: 'NEED_LOGIN' }, 'https://www.realcatcha.com')}
+            onClick={() => {
+              const parentOrigin = window.parent?.location?.origin || 'https://realcatcha.com';
+              window.parent?.postMessage({ type: 'NEED_LOGIN' }, parentOrigin);
+            }}
             style={{
               padding: '12px 24px',
               backgroundColor: '#1976d2',
@@ -130,7 +133,10 @@ export const RequireAdmin: React.FC<GuardProps> = ({ children }) => {
         </Typography>
         <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
           <button
-            onClick={() => window.parent?.postMessage({ type: 'NEED_LOGIN' }, 'https://www.realcatcha.com')}
+            onClick={() => {
+              const parentOrigin = window.parent?.location?.origin || 'https://realcatcha.com';
+              window.parent?.postMessage({ type: 'NEED_LOGIN' }, parentOrigin);
+            }}
             style={{
               padding: '12px 24px',
               backgroundColor: '#1976d2',
