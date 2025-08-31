@@ -20,9 +20,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import { formatNumber, formatPercentage } from '../utils';
 import { dashboardService } from '../services/dashboardService';
@@ -84,11 +81,7 @@ const AnalyticsScreen: React.FC = () => {
     }));
   }, [statsData]);
 
-  const captchaTypeStats = [
-    { name: '이미지 인식', value: 45, color: '#1976d2' },
-    { name: '필기 인식', value: 35, color: '#dc004e' },
-    { name: '감정 인식', value: 20, color: '#f57c00' },
-  ];
+
 
   const errorTypes = [
     { type: '타임아웃', count: 156, percentage: 42.5 },
@@ -137,7 +130,7 @@ const AnalyticsScreen: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* 기간별 요청 현황 (API 연동) */}
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -159,36 +152,7 @@ const AnalyticsScreen: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* 캡차 유형별 비율 */}
-        <Grid item xs={12} lg={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                캡차 유형별 사용 비율
-              </Typography>
-              <Box sx={{ height: 300, mt: 2 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={captchaTypeStats}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, value }) => `${name} ${value}%`}
-                    >
-                      {captchaTypeStats.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+
 
         {/* 오류 유형 분석 */}
         <Grid item xs={12}>
