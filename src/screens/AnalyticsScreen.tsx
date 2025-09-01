@@ -22,9 +22,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import { formatNumber, formatPercentage } from '../utils';
 import { dashboardService } from '../services/dashboardService';
@@ -268,7 +265,7 @@ const AnalyticsScreen: React.FC = () => {
         )}
 
         {/* 기간별 요청 현황 (API 연동) */}
-        <Grid item xs={12} lg={8}>
+        <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -290,36 +287,7 @@ const AnalyticsScreen: React.FC = () => {
           </Card>
         </Grid>
 
-        {/* 캡차 유형별 비율 */}
-        <Grid item xs={12} lg={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                캡차 유형별 사용 비율
-              </Typography>
-              <Box sx={{ height: 300, mt: 2 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={captchaTypeStats}
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={100}
-                      fill="#8884d8"
-                      dataKey="value"
-                      label={({ name, value }) => `${name} ${value}%`}
-                    >
-                      {captchaTypeStats.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+
 
         {/* 오류 유형 분석 */}
         <Grid item xs={12}>
