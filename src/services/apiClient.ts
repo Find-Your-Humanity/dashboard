@@ -15,31 +15,8 @@ const apiClient: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
-// Attach Authorization header if token exists in localStorage
+// 쿠키 기반 인증 사용: Authorization 헤더 자동 부착 로직 제거
 apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  try {
-    const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-    if (token) {
-      // 토큰이 유효한지 간단한 검증 (빈 문자열이나 undefined가 아닌지)
-      if (token.trim() && token !== 'undefined' && token !== 'null') {
-        const headers: AxiosRequestHeaders = {
-          ...(config.headers || {}),
-          Authorization: `Bearer ${token}`,
-        } as AxiosRequestHeaders;
-        config.headers = headers;
-      } else {
-        // 유효하지 않은 토큰은 제거
-        console.warn('유효하지 않은 토큰 발견, 제거 중...');
-        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-      }
-    }
-  } catch (error) {
-    console.warn('토큰 처리 중 오류:', error);
-    // 스토리지 오류 시 토큰 정리 시도
-    try {
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
-    } catch {}
-  }
   return config;
 });
 
@@ -66,24 +43,11 @@ apiClient.interceptors.response.use(
           }
         );
         
-        if (refreshResp.data && refreshResp.data.data && refreshResp.data.data.access_token) {
-          const newAccess = refreshResp.data.data.access_token;
-          
-          // 새 토큰을 localStorage에 저장
-          try {
-            localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, newAccess);
-            console.log('토큰 갱신 성공');
-          } catch (storageError) {
-            console.warn('토큰 저장 실패:', storageError);
-          }
-          
-          // 원래 요청에 새 토큰으로 헤더 설정
-          originalRequest.headers = {
-            ...(originalRequest.headers || {}),
-            Authorization: `Bearer ${newAccess}`,
-          };
-          
-          // 원래 요청 재시도
+        if (refreshResp.data && (refreshResp.data.data?.access_token || refreshResp.data.access_token)) {
+          // 서버가 쿠키를 갱신하므로 헤더/스토리지 조작 없이 재시도만 수행
+          console.log('토큰 갱신 성공 (쿠키 기반)');
+
+          // 원래 요청 재시도 (withCredentials 유지)
           return apiClient(originalRequest);
         } else {
           throw new Error('토큰 갱신 응답에 access_token이 없습니다');
@@ -91,7 +55,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         console.warn('토큰 갱신 실패:', refreshError);
         
-        // refresh 실패 시 토큰 정리
+        // refresh 실패 시 로컬 저장소 토큰 사용 안 함 (쿠키 기반)
         try {
           localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
           localStorage.removeItem(STORAGE_KEYS.USER_DATA);
