@@ -1,4 +1,4 @@
-import { ApiResponse, DashboardAnalytics, CaptchaStats } from '../types';
+import { ApiResponse, DashboardAnalytics, CaptchaStats, ApiUsageLimit } from '../types';
 import { apiClient } from './apiClient';
 import { API_ENDPOINTS } from '../config/api';
 
@@ -18,6 +18,18 @@ class DashboardService {
     try {
       const response = await apiClient.get<ApiResponse<CaptchaStats[]>>(
         `${API_ENDPOINTS.DASHBOARD.STATS}?period=${period}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // API 사용량 제한 조회
+  async getUsageLimits(): Promise<ApiResponse<ApiUsageLimit>> {
+    try {
+      const response = await apiClient.get<ApiResponse<ApiUsageLimit>>(
+        API_ENDPOINTS.DASHBOARD.USAGE_LIMITS
       );
       return response.data;
     } catch (error) {

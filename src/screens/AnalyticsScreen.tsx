@@ -11,6 +11,8 @@ import {
   MenuItem,
   SelectChangeEvent,
   Alert,
+  LinearProgress,
+  Chip,
 } from '@mui/material';
 import {
   BarChart,
@@ -26,11 +28,12 @@ import {
 } from 'recharts';
 import { formatNumber, formatPercentage } from '../utils';
 import { dashboardService } from '../services/dashboardService';
-import { CaptchaStats } from '../types';
+import { CaptchaStats, ApiUsageLimit } from '../types';
 
 const AnalyticsScreen: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('7days');
   const [statsData, setStatsData] = useState<CaptchaStats[]>([]);
+  const [usageLimits, setUsageLimits] = useState<ApiUsageLimit | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
@@ -63,6 +66,21 @@ const AnalyticsScreen: React.FC = () => {
     fetchStats();
   }, [timePeriod]);
 
+  // API 사용량 제한 조회
+  useEffect(() => {
+    const fetchUsageLimits = async () => {
+      try {
+        const res = await dashboardService.getUsageLimits();
+        if (res.success) {
+          setUsageLimits(res.data);
+        }
+      } catch (e) {
+        console.error('API 사용량 제한 조회 실패:', e);
+      }
+    };
+    fetchUsageLimits();
+  }, []);
+
   // 차트용 가공 데이터 생성 (라벨은 기간에 따라 합성)
   const chartData = useMemo(() => {
     const length = statsData.length;
@@ -83,6 +101,22 @@ const AnalyticsScreen: React.FC = () => {
       failed: s.failedAttempts,
     }));
   }, [statsData]);
+
+  // 사용량 제한 상태에 따른 색상 반환
+  const getUsageStatusColor = (status: string) => {
+    switch (status) {
+      case 'normal': return 'success';
+      case 'warning': return 'warning';
+      case 'critical': return 'error';
+      case 'exceeded': return 'error';
+      default: return 'default';
+    }
+  };
+
+  // 사용량 퍼센트 계산
+  const getUsagePercentage = (current: number, limit: number) => {
+    return Math.min((current / limit) * 100, 100);
+  };
 
   const captchaTypeStats = [
     { name: '이미지 인식', value: 45, color: '#1976d2' },
@@ -136,6 +170,103 @@ const AnalyticsScreen: React.FC = () => {
       )}
 
       <Grid container spacing={3}>
+        {/* API 사용량 제한 확인 */}
+        {usageLimits && (
+          <Grid item xs={12}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    API 사용량 제한 확인
+                  </Typography>
+                  <Chip 
+                    label={`${usageLimits.planDisplayName || usageLimits.plan.toUpperCase()} 플랜`}
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Box>
+                <Grid container spacing={3}>
+                  {/* 분당 요청 제한 */}
+                  <Grid item xs={12} md={4}>
+                    <Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2">분당 요청 제한</Typography>
+                        <Typography variant="body2" fontWeight="bold">
+                          {formatNumber(usageLimits.currentUsage.perMinute)} / {formatNumber(usageLimits.limits.perMinute)}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={getUsagePercentage(usageLimits.currentUsage.perMinute, usageLimits.limits.perMinute)}
+                        color={getUsageStatusColor(usageLimits.status) as any}
+                        sx={{ height: 8, borderRadius: 4 }}
+                      />
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                        리셋: {new Date(usageLimits.resetTimes.perMinute).toLocaleTimeString()}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* 일일 요청 제한 */}
+                  <Grid item xs={12} md={4}>
+                    <Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2">일일 요청 제한</Typography>
+                        <Typography variant="body2" fontWeight="bold">
+                          {formatNumber(usageLimits.currentUsage.perDay)} / {formatNumber(usageLimits.limits.perDay)}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={getUsagePercentage(usageLimits.currentUsage.perDay, usageLimits.limits.perDay)}
+                        color={getUsageStatusColor(usageLimits.status) as any}
+                        sx={{ height: 8, borderRadius: 4 }}
+                      />
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                        리셋: {new Date(usageLimits.resetTimes.perDay).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  </Grid>
+
+                  {/* 월간 요청 제한 */}
+                  <Grid item xs={12} md={4}>
+                    <Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="body2">월간 요청 제한</Typography>
+                        <Typography variant="body2" fontWeight="bold">
+                          {formatNumber(usageLimits.currentUsage.perMonth)} / {formatNumber(usageLimits.limits.perMonth)}
+                        </Typography>
+                      </Box>
+                      <LinearProgress
+                        variant="determinate"
+                        value={getUsagePercentage(usageLimits.currentUsage.perMonth, usageLimits.limits.perMonth)}
+                        color={getUsageStatusColor(usageLimits.status) as any}
+                        sx={{ height: 8, borderRadius: 4 }}
+                      />
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+                        리셋: {new Date(usageLimits.resetTimes.perMonth).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                {/* 사용량 제한 경고 */}
+                {usageLimits.status !== 'normal' && (
+                  <Alert 
+                    severity={usageLimits.status === 'exceeded' ? 'error' : 'warning'} 
+                    sx={{ mt: 2 }}
+                  >
+                    {usageLimits.status === 'exceeded' 
+                      ? 'API 사용량 제한을 초과했습니다. 플랜을 업그레이드하거나 다음 리셋 시간까지 기다려주세요.'
+                      : 'API 사용량이 제한에 근접하고 있습니다. 사용량을 모니터링하세요.'
+                    }
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+
         {/* 기간별 요청 현황 (API 연동) */}
         <Grid item xs={12} lg={8}>
           <Card>

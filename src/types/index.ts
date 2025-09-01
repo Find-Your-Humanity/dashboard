@@ -59,3 +59,25 @@ export interface NavItem {
   icon: React.ReactNode;
   badge?: number;
 }
+
+// API Usage Limit Types
+export interface ApiUsageLimit {
+  plan: 'free' | 'basic' | 'premium' | 'enterprise';
+  planDisplayName?: string; // 플랜 표시 이름 추가
+  limits: {
+    perMinute: number;
+    perDay: number;
+    perMonth: number;
+  };
+  currentUsage: {
+    perMinute: number;
+    perDay: number;
+    perMonth: number;
+  };
+  resetTimes: {
+    perMinute: string; // ISO timestamp
+    perDay: string;    // ISO timestamp
+    perMonth: string;  // ISO timestamp
+  };
+  status: 'normal' | 'warning' | 'critical' | 'exceeded';
+}
