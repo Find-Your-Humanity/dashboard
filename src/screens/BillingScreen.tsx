@@ -43,6 +43,7 @@ const BillingScreen: React.FC = () => {
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentWidget, setPaymentWidget] = useState<any>(null);
   const [orderId, setOrderId] = useState<string>('');
+  const [paymentMethods, setPaymentMethods] = useState<any>(null);
   
   // 간단한 주문 ID 생성기 (대시보드 결제 테스트용)
   const generateOrderId = () => {
@@ -106,7 +107,8 @@ const BillingScreen: React.FC = () => {
       setTimeout(async () => {
         try {
           const widget = paymentWidget || (await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS'));
-          await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
+          const methods = await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
+          setPaymentMethods(methods);
         } catch (e) {
           console.error('결제수단 렌더링 실패:', e);
           setError('결제 위젯 초기화에 실패했습니다.');
@@ -121,11 +123,10 @@ const BillingScreen: React.FC = () => {
   };
 
   const handleRequestPayment = async () => {
-    if (!selectedPlan || !orderId) return;
+    if (!selectedPlan || !orderId || !paymentMethods) return;
     try {
-      const widget = paymentWidget || (await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS'));
       const planType = (selectedPlan.name || '').toLowerCase();
-      await widget.requestPayment({
+      await paymentMethods.requestPayment({
         orderId,
         orderName: `${selectedPlan.name} 구독`,
         amount: selectedPlan.price,
