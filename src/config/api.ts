@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
     STATS: '/api/dashboard/stats',
     REALTIME: '/api/dashboard/realtime',
     USAGE_LIMITS: '/api/dashboard/usage-limits', // API 사용량 제한 조회
+    API_KEY_USAGE: '/api/dashboard/api-key-usage', // API 키별 사용량 통계
   },
   USERS: {
     LIST: '/api/users',

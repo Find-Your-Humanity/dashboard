@@ -76,6 +76,18 @@ class DashboardService {
       throw error;
     }
   }
+
+  // API 키별 사용량 통계 조회
+  async getApiKeyUsage(apiKey: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.get<ApiResponse<any>>(
+        `${API_ENDPOINTS.DASHBOARD.API_KEY_USAGE}/${apiKey}`
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const dashboardService = new DashboardService();
