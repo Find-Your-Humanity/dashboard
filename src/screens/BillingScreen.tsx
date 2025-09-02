@@ -39,6 +39,14 @@ const BillingScreen: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [changingPlan, setChangingPlan] = useState(false);
+  
+  // 간단한 주문 ID 생성기 (대시보드 결제 테스트용)
+  const generateOrderId = () => {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).slice(2, 8);
+    const userId = user?.id ?? 'anonymous';
+    return `DASH_${timestamp}_${random}_${userId}`;
+  };
 
   useEffect(() => {
     fetchBillingData();
@@ -82,14 +90,31 @@ const BillingScreen: React.FC = () => {
 
     try {
       setChangingPlan(true);
-      const response = await billingService.changePlan(selectedPlan.id);
-      if (response.success) {
+      // 결제 승인 → 구독 업데이트 (백엔드에서 승인 및 upsert 처리)
+      const orderId = generateOrderId();
+      const res = await fetch('/api/payments/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          // 대시보드 내 결제 연동: 승인 토큰은 백엔드에서 검증/모의처리 가능
+          paymentKey: 'DASHBOARD_DIRECT',
+          orderId,
+          amount: selectedPlan.price,
+          plan_id: selectedPlan.id,
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok && result?.success) {
         setDialogOpen(false);
         setSelectedPlan(null);
         setError(null);
         await fetchBillingData();
+        // 다른 화면 사용량/한도 갱신 트리거
+        window.dispatchEvent(new Event('planChanged'));
       } else {
-        setError(response.error || '요금제 변경에 실패했습니다.');
+        setError(result?.detail || '요금제 변경에 실패했습니다.');
       }
     } catch (err) {
       console.error('요금제 변경 실패:', err);
