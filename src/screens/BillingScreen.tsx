@@ -92,7 +92,9 @@ const BillingScreen: React.FC = () => {
       setChangingPlan(true);
       // 결제 승인 → 구독 업데이트 (백엔드에서 승인 및 upsert 처리)
       const orderId = generateOrderId();
-      const res = await fetch('/api/payments/confirm', {
+      // 게이트웨이 도메인으로 고정 (대시보드/웹 모두 동일 게이트웨이 사용)
+      const gatewayBase = 'https://gateway.realcatcha.com';
+      const res = await fetch(`${gatewayBase}/api/payments/confirm`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

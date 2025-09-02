@@ -39,6 +39,9 @@ export const API_ENDPOINTS = {
     TOGGLE: (keyId: string) => `/api/keys/${keyId}/toggle`,
     DELETE: (keyId: string) => `/api/keys/${keyId}`,
   },
+  PAYMENTS: {
+    CONFIRM: '/api/payments/confirm',
+  },
 } as const;
 
 // HTTP Status Codes
