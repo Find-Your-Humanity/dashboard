@@ -12,7 +12,7 @@
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "recharts": "^2.5.0",
-    "@tosspayments/payment-widget-sdk": "^1.6.0"
+    "@tosspayments/payment-widget-sdk": "^1.4.5"
   },
   "scripts": {
     "start": "react-scripts start",
