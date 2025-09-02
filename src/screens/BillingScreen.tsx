@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { billingService, Plan, CurrentPlan } from '../services/billingService';
+import { loadPaymentWidget } from '@tosspayments/payment-widget-sdk';
 
 const BillingScreen: React.FC = () => {
   const { user } = useAuth();
@@ -39,6 +40,9 @@ const BillingScreen: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [changingPlan, setChangingPlan] = useState(false);
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentWidget, setPaymentWidget] = useState<any>(null);
+  const [orderId, setOrderId] = useState<string>('');
   
   // 간단한 주문 ID 생성기 (대시보드 결제 테스트용)
   const generateOrderId = () => {
@@ -90,39 +94,47 @@ const BillingScreen: React.FC = () => {
 
     try {
       setChangingPlan(true);
-      // 결제 승인 → 구독 업데이트 (백엔드에서 승인 및 upsert 처리)
-      const orderId = generateOrderId();
-      // 게이트웨이 도메인으로 고정 (대시보드/웹 모두 동일 게이트웨이 사용)
-      const gatewayBase = 'https://gateway.realcatcha.com';
-      const res = await fetch(`${gatewayBase}/api/payments/confirm`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          // 대시보드 내 결제 연동: 승인 토큰은 백엔드에서 검증/모의처리 가능
-          paymentKey: 'DASHBOARD_DIRECT',
-          orderId,
-          amount: selectedPlan.price,
-          plan_id: selectedPlan.id,
-        }),
-      });
-
-      const result = await res.json();
-      if (res.ok && result?.success) {
-        setDialogOpen(false);
-        setSelectedPlan(null);
-        setError(null);
-        await fetchBillingData();
-        // 다른 화면 사용량/한도 갱신 트리거
-        window.dispatchEvent(new Event('planChanged'));
-      } else {
-        setError(result?.detail || '요금제 변경에 실패했습니다.');
+      // Toss 위젯 초기화 및 결제 다이얼로그 열기
+      if (!paymentWidget) {
+        const widget = await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS');
+        setPaymentWidget(widget);
       }
+      const oid = generateOrderId();
+      setOrderId(oid);
+      setPaymentDialogOpen(true);
+      // 결제수단 영역 렌더링
+      setTimeout(async () => {
+        try {
+          const widget = paymentWidget || (await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS'));
+          await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
+        } catch (e) {
+          console.error('결제수단 렌더링 실패:', e);
+          setError('결제 위젯 초기화에 실패했습니다.');
+        }
+      }, 0);
     } catch (err) {
-      console.error('요금제 변경 실패:', err);
-      setError('요금제 변경에 실패했습니다.');
+      console.error('결제 위젯 초기화 실패:', err);
+      setError('결제 위젯 초기화에 실패했습니다.');
     } finally {
       setChangingPlan(false);
+    }
+  };
+
+  const handleRequestPayment = async () => {
+    if (!selectedPlan || !orderId) return;
+    try {
+      const widget = paymentWidget || (await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS'));
+      const planType = (selectedPlan.name || '').toLowerCase();
+      await widget.requestPayment({
+        orderId,
+        orderName: `${selectedPlan.name} 구독`,
+        amount: selectedPlan.price,
+        successUrl: `https://realcatcha.com/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
+        failUrl: `https://realcatcha.com/payment/fail?planType=${planType}`,
+      });
+    } catch (e) {
+      console.error('결제 요청 실패:', e);
+      setError('결제 요청에 실패했습니다.');
     }
   };
 
@@ -340,6 +352,28 @@ const BillingScreen: React.FC = () => {
           >
             {changingPlan ? <CircularProgress size={20} /> : '변경 확인'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* 결제 다이얼로그 */}
+      <Dialog open={paymentDialogOpen} onClose={() => setPaymentDialogOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>결제 진행</DialogTitle>
+        <DialogContent>
+          <Box id="toss-payment-methods" sx={{ minHeight: 200 }} />
+          {selectedPlan && (
+            <Box mt={2}>
+              <Typography variant="body2" color="text.secondary">
+                결제 금액: ₩{selectedPlan.price.toLocaleString()}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                결제 완료 후 웹사이트에서 승인이 처리되며, 완료되면 대시보드로 돌아가세요.
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setPaymentDialogOpen(false)}>취소</Button>
+          <Button variant="contained" onClick={handleRequestPayment}>결제하기</Button>
         </DialogActions>
       </Dialog>
     </Box>
