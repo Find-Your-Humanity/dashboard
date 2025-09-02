@@ -11,7 +11,8 @@
     "@mui/icons-material": "^5.11.0",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
-    "recharts": "^2.5.0"
+    "recharts": "^2.5.0",
+    "@tosspayments/payment-widget-sdk": "^1.6.0"
   },
   "scripts": {
     "start": "react-scripts start",
