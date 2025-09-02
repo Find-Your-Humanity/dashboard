@@ -134,6 +134,18 @@ class BillingService {
   async changePlan(planId: number): Promise<ApiResponse<PlanChangeResponse>> {
     try {
       const response = await apiClient.post('/api/billing/change-plan', { plan_id: planId });
+      
+      // 요금제 변경 성공 시 Analytics 데이터 새로고침을 위한 이벤트 발생
+      if (response.data.success) {
+        // 커스텀 이벤트를 발생시켜 Analytics 화면에서 데이터를 새로고침하도록 함
+        window.dispatchEvent(new CustomEvent('planChanged', { 
+          detail: { 
+            planId, 
+            message: response.data.message 
+          } 
+        }));
+      }
+      
       return {
         success: true,
         data: response.data

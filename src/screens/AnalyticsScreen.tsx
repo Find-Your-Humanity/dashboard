@@ -75,7 +75,22 @@ const AnalyticsScreen: React.FC = () => {
         console.error('API 사용량 제한 조회 실패:', e);
       }
     };
+    
+    // 초기 로드
     fetchUsageLimits();
+    
+    // 요금제 변경 이벤트 리스너 추가
+    const handlePlanChanged = () => {
+      console.log('요금제 변경 감지됨 - Analytics 데이터 새로고침');
+      fetchUsageLimits();
+    };
+    
+    window.addEventListener('planChanged', handlePlanChanged);
+    
+    // 클린업
+    return () => {
+      window.removeEventListener('planChanged', handlePlanChanged);
+    };
   }, []);
 
   // 차트용 가공 데이터 생성 (라벨은 기간에 따라 합성)
