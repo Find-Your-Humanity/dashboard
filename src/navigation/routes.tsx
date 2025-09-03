@@ -8,6 +8,7 @@ import RequestsScreen from '../screens/RequestsScreen';
 import RequestStatusScreen from '../screens/RequestStatusScreen';
 import BillingScreen from '../screens/BillingScreen';
 import ApiKeysScreen from '../screens/ApiKeysScreen';
+import PaymentSuccessScreen from '../screens/PaymentSuccessScreen';
 
 export type AppRoute = {
   path: string;
@@ -23,6 +24,7 @@ export const TENANT_ROUTES: AppRoute[] = [
   { id: 'billing', label: '요금제', path: '/app/billing', element: <BillingScreen />, showInMenu: true },
   { id: 'api-keys', label: 'API 키', path: '/app/api-keys', element: <ApiKeysScreen />, showInMenu: true },
   { id: 'settings', label: '설정', path: '/app/settings', element: <SettingsScreen />, showInMenu: true },
+  { id: 'payment-success', label: '결제 성공', path: '/payment/success', element: <PaymentSuccessScreen />, showInMenu: false },
 ];
 
 export const ADMIN_ROUTES: AppRoute[] = [

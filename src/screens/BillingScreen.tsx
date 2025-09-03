@@ -151,8 +151,8 @@ const BillingScreen: React.FC = () => {
         orderId,
         orderName: `${selectedPlan.name} 구독`,
         amount: selectedPlan.price,
-        successUrl: `https://realcatcha.com/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
-        failUrl: `https://realcatcha.com/payment/fail?planType=${planType}`,
+        successUrl: `${window.location.origin}/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
+        failUrl: `${window.location.origin}/payment/fail?planType=${planType}`,
       };
       
       console.log("🔍 결제 데이터:", paymentData);
