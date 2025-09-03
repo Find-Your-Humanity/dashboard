@@ -115,19 +115,7 @@ const BillingScreen: React.FC = () => {
       setOrderId(oid);
       setPaymentDialogOpen(true);
       
-      // 결제수단 영역 렌더링
-      setTimeout(async () => {
-        try {
-          const methods = await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
-          const agreement = await widget.renderAgreement('#toss-agreement');
-          setPaymentMethods(methods);
-          setAgreementWidget(agreement);
-          console.log("✅ 결제수단 렌더링 완료");
-        } catch (e) {
-          console.error('결제수단 렌더링 실패:', e);
-          setError('결제 위젯 초기화에 실패했습니다.');
-        }
-      }, 100);
+      console.log("✅ 결제 위젯 초기화 완료 - 새 창으로 결제 진행");
     } catch (err) {
       console.error('결제 위젯 초기화 실패:', err);
       setError('결제 위젯 초기화에 실패했습니다.');
@@ -151,8 +139,12 @@ const BillingScreen: React.FC = () => {
         orderId,
         orderName: `${selectedPlan.name} 구독`,
         amount: selectedPlan.price,
-        successUrl: `https://dashboard.realcatcha.com/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
-        failUrl: `https://dashboard.realcatcha.com/payment/fail?planType=${planType}`,
+        successUrl: `https://dashboard.realcatcha.com/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}&paymentType=NORMAL`,
+        failUrl: `https://dashboard.realcatcha.com/payment/fail?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
+        windowTarget: 'popup', // 새 창으로 결제창 열기 (iframe 대신)
+        customerEmail: user?.email || 'test@example.com',
+        customerName: user?.name || '테스트 사용자',
+        flowMode: 'BILLING'
       };
       
       console.log("🔍 결제 데이터:", paymentData);
@@ -391,16 +383,18 @@ const BillingScreen: React.FC = () => {
       <Dialog open={paymentDialogOpen} onClose={() => setPaymentDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>결제 진행</DialogTitle>
         <DialogContent>
-          <Box id="toss-payment-methods" sx={{ minHeight: 200 }} />
-          <Box id="toss-agreement" sx={{ mt: 2, minHeight: 100 }} />
           {selectedPlan && (
-            <Box mt={2}>
-              <Typography variant="body2" color="text.secondary">
+            <Box>
+              <Typography variant="body1" paragraph>
+                <strong>{selectedPlan.name}</strong> 요금제로 결제를 진행합니다.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
                 결제 금액: ₩{selectedPlan.price.toLocaleString()}
               </Typography>
-              <Typography variant="caption" color="text.secondary">
-                결제 완료 후 웹사이트에서 승인이 처리되며, 완료되면 대시보드로 돌아가세요.
-              </Typography>
+              <Alert severity="info" sx={{ mt: 2 }}>
+                결제하기 버튼을 클릭하면 새 창에서 Toss Payments 결제창이 열립니다.
+                결제 완료 후 자동으로 대시보드로 돌아갑니다.
+              </Alert>
             </Box>
           )}
         </DialogContent>
