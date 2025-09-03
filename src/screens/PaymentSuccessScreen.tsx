@@ -39,6 +39,19 @@ const PaymentSuccessScreen: React.FC = () => {
       return;
     }
 
+    // 부모 페이지로 결제 성공 메시지 전송 (iframe에서 열린 경우)
+    if (window.parent !== window) {
+      try {
+        window.parent.postMessage({
+          type: 'PAYMENT_SUCCESS',
+          data: { planId, amount, orderId, paymentType, paymentKey }
+        }, 'https://dashboard.realcatcha.com');
+        console.log("✅ 부모 페이지로 결제 성공 메시지 전송");
+      } catch (error) {
+        console.log("⚠️ 부모 페이지로 메시지 전송 실패 (일반 페이지에서 열림)");
+      }
+    }
+
     // 결제 완료 처리
     confirmPayment();
   }, [planId, amount, orderId, paymentType, paymentKey]);

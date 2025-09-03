@@ -56,6 +56,42 @@ const BillingScreen: React.FC = () => {
 
   useEffect(() => {
     fetchBillingData();
+    
+    // Toss Payments에서 postMessage 수신 리스너 추가
+    const handleMessage = (event: MessageEvent) => {
+      // Toss Payments 도메인에서 온 메시지만 처리
+      if (event.origin !== 'https://payment-gateway-sandbox.tosspayments.com' && 
+          event.origin !== 'https://payment-gateway.tosspayments.com') {
+        return;
+      }
+      
+      console.log("🔍 Toss Payments에서 메시지 수신:", event.data);
+      
+      // 결제 성공 메시지 처리
+      if (event.data && event.data.type === 'PAYMENT_SUCCESS') {
+        const { planId, amount, orderId, paymentType, paymentKey } = event.data.data;
+        console.log("✅ 결제 성공 메시지 수신:", { planId, amount, orderId, paymentType, paymentKey });
+        
+        // 결제 성공 페이지로 리다이렉트
+        window.location.href = `https://dashboard.realcatcha.com/payment/success?planId=${planId}&amount=${amount}&orderId=${orderId}&paymentType=${paymentType}&paymentKey=${paymentKey}`;
+      }
+      
+      // 결제 실패 메시지 처리
+      if (event.data && event.data.type === 'PAYMENT_FAIL') {
+        const { planId, amount, orderId, errorCode, errorMessage } = event.data.data;
+        console.log("❌ 결제 실패 메시지 수신:", { planId, amount, orderId, errorCode, errorMessage });
+        
+        // 결제 실패 페이지로 리다이렉트
+        window.location.href = `https://dashboard.realcatcha.com/payment/fail?planId=${planId}&amount=${amount}&orderId=${orderId}&errorCode=${errorCode}&errorMessage=${encodeURIComponent(errorMessage)}`;
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    
+    // 컴포넌트 언마운트 시 리스너 제거
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
   }, []);
 
   const fetchBillingData = async () => {
@@ -153,8 +189,8 @@ const BillingScreen: React.FC = () => {
         orderId,
         orderName: `${selectedPlan.name} 구독`,
         amount: selectedPlan.price,
-        successUrl: `https://dashboard.realcatcha.com/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}&paymentType=NORMAL`,
-        failUrl: `https://dashboard.realcatcha.com/payment/fail?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
+        successUrl: `${window.location.origin}/payment/success?planType=${selectedPlan.name?.toLowerCase()}&planId=${selectedPlan.id}`,
+        failUrl: `${window.location.origin}/payment/fail?planType=${selectedPlan.name?.toLowerCase()}&planId=${selectedPlan.id}`,
         windowTarget: 'popup', // 새 창으로 결제창 열기 (iframe 대신)
         customerEmail: user?.email || 'test@example.com',
         customerName: user?.name || '테스트 사용자',

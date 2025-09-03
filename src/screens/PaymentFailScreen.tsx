@@ -15,9 +15,26 @@ const PaymentFailScreen: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   // URL 파라미터에서 결제 정보 추출
-  const planType = searchParams.get('planType');
-  const errorCode = searchParams.get('code');
-  const errorMessage = searchParams.get('message');
+  const planId = searchParams.get('planId');
+  const amount = searchParams.get('amount');
+  const orderId = searchParams.get('orderId');
+  const errorCode = searchParams.get('errorCode');
+  const errorMessage = searchParams.get('errorMessage');
+
+  // 부모 페이지로 결제 실패 메시지 전송 (iframe에서 열린 경우)
+  React.useEffect(() => {
+    if (window.parent !== window) {
+      try {
+        window.parent.postMessage({
+          type: 'PAYMENT_FAIL',
+          data: { planId, amount, orderId, errorCode, errorMessage }
+        }, 'https://dashboard.realcatcha.com');
+        console.log("✅ 부모 페이지로 결제 실패 메시지 전송");
+      } catch (error) {
+        console.log("⚠️ 부모 페이지로 메시지 전송 실패 (일반 페이지에서 열림)");
+      }
+    }
+  }, [planId, amount, orderId, errorCode, errorMessage]);
 
   const handleGoToBilling = () => {
     navigate('/billing');
@@ -47,10 +64,10 @@ const PaymentFailScreen: React.FC = () => {
             {getErrorMessage()}
           </Alert>
 
-          {planType && (
+          {planId && (
             <Box mb={3}>
               <Typography variant="body1" paragraph>
-                <strong>{planType.toUpperCase()}</strong> 요금제 변경이 취소되었습니다.
+                <strong>Plan ID: {planId}</strong> 요금제 변경이 취소되었습니다.
               </Typography>
             </Box>
           )}
