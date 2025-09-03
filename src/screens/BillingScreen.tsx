@@ -115,7 +115,21 @@ const BillingScreen: React.FC = () => {
       setOrderId(oid);
       setPaymentDialogOpen(true);
       
-      console.log("✅ 결제 위젯 초기화 완료 - 새 창으로 결제 진행");
+      // 결제수단 UI 렌더링 (팝업 모드에서 필요)
+      setTimeout(async () => {
+        try {
+          const methods = await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
+          const agreement = await widget.renderAgreement('#toss-agreement');
+          setPaymentMethods(methods);
+          setAgreementWidget(agreement);
+          console.log("✅ 결제수단 UI 렌더링 완료");
+        } catch (e) {
+          console.error('결제수단 UI 렌더링 실패:', e);
+          setError('결제 위젯 초기화에 실패했습니다.');
+        }
+      }, 100);
+      
+      console.log("✅ 결제 위젯 초기화 완료");
     } catch (err) {
       console.error('결제 위젯 초기화 실패:', err);
       setError('결제 위젯 초기화에 실패했습니다.');
@@ -144,7 +158,7 @@ const BillingScreen: React.FC = () => {
         windowTarget: 'popup', // 새 창으로 결제창 열기 (iframe 대신)
         customerEmail: user?.email || 'test@example.com',
         customerName: user?.name || '테스트 사용자',
-        flowMode: 'BILLING'
+        flowMode: 'DEFAULT' // 명시적으로 기본 흐름 모드 설정
       };
       
       console.log("🔍 결제 데이터:", paymentData);
@@ -391,8 +405,15 @@ const BillingScreen: React.FC = () => {
               <Typography variant="body2" color="text.secondary" paragraph>
                 결제 금액: ₩{selectedPlan.price.toLocaleString()}
               </Typography>
+              
+              {/* 결제수단 선택 UI */}
+              <Box id="toss-payment-methods" sx={{ minHeight: 200, my: 2 }} />
+              
+              {/* 약관 동의 UI */}
+              <Box id="toss-agreement" sx={{ minHeight: 100, my: 2 }} />
+              
               <Alert severity="info" sx={{ mt: 2 }}>
-                결제하기 버튼을 클릭하면 새 창에서 Toss Payments 결제창이 열립니다.
+                결제수단을 선택하고 약관에 동의한 후 결제하기 버튼을 클릭하세요.
                 결제 완료 후 자동으로 대시보드로 돌아갑니다.
               </Alert>
             </Box>
