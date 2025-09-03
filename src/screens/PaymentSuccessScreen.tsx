@@ -47,6 +47,13 @@ const PaymentSuccessScreen: React.FC = () => {
     try {
       console.log("🔍 결제 완료 처리 시작");
       
+      // null 체크 및 타입 안전성 확보
+      if (!amount || !planId) {
+        setError("결제 정보가 올바르지 않습니다.");
+        setIsProcessing(false);
+        return;
+      }
+      
       const response = await fetch('https://gateway.realcatcha.com/api/payments/complete', {
         method: 'POST',
         headers: {
@@ -54,7 +61,7 @@ const PaymentSuccessScreen: React.FC = () => {
         },
         body: JSON.stringify({
           paymentKey: paymentKey || 'DASHBOARD_DIRECT',
-          orderId,
+          orderId: orderId || '',
           amount: parseInt(amount),
           plan_id: parseInt(planId)
         }),
