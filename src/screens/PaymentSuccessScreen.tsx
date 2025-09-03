@@ -147,15 +147,15 @@ const PaymentSuccessScreen: React.FC = () => {
                 <Typography variant="body2">{paymentResult.payment_id}</Typography>
               </Box>
               
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="body2" color="text.secondary">주문 ID:</Typography>
-                <Typography variant="body2">{orderId}</Typography>
-              </Box>
-              
-              <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="body2" color="text.secondary">결제 금액:</Typography>
-                <Typography variant="body2">₩{parseInt(amount).toLocaleString()}</Typography>
-              </Box>
+                             <Box display="flex" justifyContent="space-between" mb={1}>
+                 <Typography variant="body2" color="text.secondary">주문 ID:</Typography>
+                 <Typography variant="body2">{orderId || 'N/A'}</Typography>
+               </Box>
+               
+               <Box display="flex" justifyContent="space-between" mb={1}>
+                 <Typography variant="body2" color="text.secondary">결제 금액:</Typography>
+                 <Typography variant="body2">₩{amount ? parseInt(amount).toLocaleString() : 'N/A'}</Typography>
+               </Box>
             </Box>
           )}
 
