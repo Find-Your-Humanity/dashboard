@@ -69,11 +69,9 @@ const BillingScreen: React.FC = () => {
   const handlePlanChange = (plan: Plan) => {
     // 바로 웹사이트 결제 페이지로 이동
     const planType = plan.name?.toLowerCase() || 'basic';
-    const planId = plan.id;
-    const amount = plan.price;
     
-    // 웹사이트 결제 페이지 URL 생성 (실제 경로는 /pay)
-    const websitePaymentUrl = `https://realcatcha.com/pay?planType=${planType}&planId=${planId}&amount=${amount}&from=dashboard`;
+    // 웹사이트 결제 페이지 URL 생성 (planType만 전달, 웹사이트에서 내부적으로 가격과 ID 매핑)
+    const websitePaymentUrl = `https://realcatcha.com/pay?planType=${planType}&from=dashboard`;
     
     console.log("🔍 웹사이트 결제 페이지로 이동:", websitePaymentUrl);
     
