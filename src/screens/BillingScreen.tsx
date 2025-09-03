@@ -132,43 +132,29 @@ const BillingScreen: React.FC = () => {
 
     try {
       setChangingPlan(true);
-      console.log("🔍 Toss Payments SDK 초기화 시작...");
+      console.log("🔍 웹사이트 결제 페이지로 이동 시작...");
       
-      // 1. 결제위젯 SDK 초기화 (Promise 기반)
-      const widget = await loadPaymentWidget(
-        'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', // 클라이언트 키
-        'ANONYMOUS' // customerKey (비회원 구매자)
-      );
+      // 웹사이트 결제 페이지로 이동 (결제 정보와 함께)
+      const planType = selectedPlan.name?.toLowerCase() || 'basic';
+      const planId = selectedPlan.id;
+      const amount = selectedPlan.price;
       
-      console.log("✅ Toss Payments SDK 초기화 완료:", widget);
-      console.log("🔍 widget 객체의 메서드들:", Object.getOwnPropertyNames(widget));
-      console.log("🔍 widget.renderPaymentMethods 타입:", typeof widget.renderPaymentMethods);
+      // 웹사이트 결제 페이지 URL 생성
+      const websitePaymentUrl = `https://realcatcha.com/payment/checkout?planType=${planType}&planId=${planId}&amount=${amount}&from=dashboard`;
       
-      setPaymentWidget(widget);
+      console.log("🔍 웹사이트 결제 페이지 URL:", websitePaymentUrl);
       
-      // 주문 ID 생성 및 결제 다이얼로그 열기
-      const oid = generateOrderId();
-      setOrderId(oid);
-      setPaymentDialogOpen(true);
+      // 새 창에서 웹사이트 결제 페이지 열기
+      window.open(websitePaymentUrl, '_blank');
       
-      // 결제수단 UI 렌더링 (팝업 모드에서 필요)
-      setTimeout(async () => {
-        try {
-          const methods = await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
-          const agreement = await widget.renderAgreement('#toss-agreement');
-          setPaymentMethods(methods);
-          setAgreementWidget(agreement);
-          console.log("✅ 결제수단 UI 렌더링 완료");
-        } catch (e) {
-          console.error('결제수단 UI 렌더링 실패:', e);
-          setError('결제 위젯 초기화에 실패했습니다.');
-        }
-      }, 100);
+      // 결제 다이얼로그 닫기
+      setDialogOpen(false);
       
-      console.log("✅ 결제 위젯 초기화 완료");
+      console.log("✅ 웹사이트 결제 페이지로 이동 완료");
+      
     } catch (err) {
-      console.error('결제 위젯 초기화 실패:', err);
-      setError('결제 위젯 초기화에 실패했습니다.');
+      console.error('웹사이트 이동 실패:', err);
+      setError('결제 페이지로 이동하는데 실패했습니다.');
     } finally {
       setChangingPlan(false);
     }
@@ -429,9 +415,9 @@ const BillingScreen: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* 결제 다이얼로그 */}
+      {/* 웹사이트 결제 안내 다이얼로그 */}
       <Dialog open={paymentDialogOpen} onClose={() => setPaymentDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>결제 진행</DialogTitle>
+        <DialogTitle>웹사이트에서 결제 진행</DialogTitle>
         <DialogContent>
           {selectedPlan && (
             <Box>
@@ -442,22 +428,32 @@ const BillingScreen: React.FC = () => {
                 결제 금액: ₩{selectedPlan.price.toLocaleString()}
               </Typography>
               
-              {/* 결제수단 선택 UI */}
-              <Box id="toss-payment-methods" sx={{ minHeight: 200, my: 2 }} />
-              
-              {/* 약관 동의 UI */}
-              <Box id="toss-agreement" sx={{ minHeight: 100, my: 2 }} />
-              
               <Alert severity="info" sx={{ mt: 2 }}>
-                결제수단을 선택하고 약관에 동의한 후 결제하기 버튼을 클릭하세요.
+                웹사이트 결제 페이지가 새 창에서 열립니다.
                 결제 완료 후 자동으로 대시보드로 돌아갑니다.
+              </Alert>
+              
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                새 창이 열리지 않았다면 팝업 차단을 해제해주세요.
               </Alert>
             </Box>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setPaymentDialogOpen(false)}>취소</Button>
-          <Button variant="contained" onClick={handleRequestPayment}>결제하기</Button>
+          <Button 
+            variant="contained" 
+            onClick={() => {
+              // 웹사이트 결제 페이지 다시 열기
+              const planType = selectedPlan?.name?.toLowerCase() || 'basic';
+              const planId = selectedPlan?.id;
+              const amount = selectedPlan?.price;
+              const websitePaymentUrl = `https://realcatcha.com/payment/checkout?planType=${planType}&planId=${planId}&amount=${amount}&from=dashboard`;
+              window.open(websitePaymentUrl, '_blank');
+            }}
+          >
+            웹사이트에서 결제하기
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
