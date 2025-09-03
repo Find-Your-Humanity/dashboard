@@ -87,6 +87,12 @@ jobs:
                     env:
                       - name: REACT_APP_API_URL
                         value: "https://gateway.realcatcha.com"
+                      - name: REACT_APP_TOSS_CLIENT_KEY
+                        value: "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm"
+                      - name: REACT_APP_TOSS_CLIENT_KEY_ALT
+                        value: ""
+                      - name: REACT_APP_TOSS_ENVIRONMENT
+                        value: "sandbox"
                     resources:
                       requests:
                         memory: "128Mi"

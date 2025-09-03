@@ -44,6 +44,7 @@ const BillingScreen: React.FC = () => {
   const [paymentWidget, setPaymentWidget] = useState<any>(null);
   const [orderId, setOrderId] = useState<string>('');
   const [paymentMethods, setPaymentMethods] = useState<any>(null);
+  const [agreementWidget, setAgreementWidget] = useState<any>(null);
   
   // 간단한 주문 ID 생성기 (대시보드 결제 테스트용)
   const generateOrderId = () => {
@@ -95,25 +96,38 @@ const BillingScreen: React.FC = () => {
 
     try {
       setChangingPlan(true);
-      // Toss 위젯 초기화 및 결제 다이얼로그 열기
-      if (!paymentWidget) {
-        const widget = await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS');
-        setPaymentWidget(widget);
-      }
+      console.log("🔍 Toss Payments SDK 초기화 시작...");
+      
+      // 1. 결제위젯 SDK 초기화 (Promise 기반)
+      const widget = await loadPaymentWidget(
+        'test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', // 클라이언트 키
+        'ANONYMOUS' // customerKey (비회원 구매자)
+      );
+      
+      console.log("✅ Toss Payments SDK 초기화 완료:", widget);
+      console.log("🔍 widget 객체의 메서드들:", Object.getOwnPropertyNames(widget));
+      console.log("🔍 widget.renderPaymentMethods 타입:", typeof widget.renderPaymentMethods);
+      
+      setPaymentWidget(widget);
+      
+      // 주문 ID 생성 및 결제 다이얼로그 열기
       const oid = generateOrderId();
       setOrderId(oid);
       setPaymentDialogOpen(true);
+      
       // 결제수단 영역 렌더링
       setTimeout(async () => {
         try {
-          const widget = paymentWidget || (await loadPaymentWidget('test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm', 'ANONYMOUS'));
           const methods = await widget.renderPaymentMethods('#toss-payment-methods', { value: selectedPlan.price });
+          const agreement = await widget.renderAgreement('#toss-agreement');
           setPaymentMethods(methods);
+          setAgreementWidget(agreement);
+          console.log("✅ 결제수단 렌더링 완료");
         } catch (e) {
           console.error('결제수단 렌더링 실패:', e);
           setError('결제 위젯 초기화에 실패했습니다.');
         }
-      }, 0);
+      }, 100);
     } catch (err) {
       console.error('결제 위젯 초기화 실패:', err);
       setError('결제 위젯 초기화에 실패했습니다.');
@@ -123,19 +137,34 @@ const BillingScreen: React.FC = () => {
   };
 
   const handleRequestPayment = async () => {
-    if (!selectedPlan || !orderId || !paymentMethods) return;
+    if (!selectedPlan || !orderId || !paymentWidget) {
+      console.error('❌ 결제 요청 실패: 필수 정보 누락', { selectedPlan, orderId, paymentWidget });
+      setError('결제 정보가 올바르지 않습니다.');
+      return;
+    }
+    
     try {
+      console.log("🔍 결제 요청 시작:", { selectedPlan, orderId, paymentWidget });
+      
       const planType = (selectedPlan.name || '').toLowerCase();
-      await paymentMethods.requestPayment({
+      const paymentData = {
         orderId,
         orderName: `${selectedPlan.name} 구독`,
         amount: selectedPlan.price,
         successUrl: `https://realcatcha.com/payment/success?planId=${selectedPlan.id}&amount=${selectedPlan.price}&orderId=${orderId}`,
         failUrl: `https://realcatcha.com/payment/fail?planType=${planType}`,
-      });
+      };
+      
+      console.log("🔍 결제 데이터:", paymentData);
+      console.log("🔍 paymentWidget.requestPayment 타입:", typeof paymentWidget.requestPayment);
+      
+      // 결제 요청 실행
+      await paymentWidget.requestPayment(paymentData);
+      console.log("✅ 결제 요청 성공");
+      
     } catch (e) {
-      console.error('결제 요청 실패:', e);
-      setError('결제 요청에 실패했습니다.');
+      console.error('❌ 결제 요청 실패:', e);
+      setError(`결제 요청에 실패했습니다: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -361,6 +390,7 @@ const BillingScreen: React.FC = () => {
         <DialogTitle>결제 진행</DialogTitle>
         <DialogContent>
           <Box id="toss-payment-methods" sx={{ minHeight: 200 }} />
+          <Box id="toss-agreement" sx={{ mt: 2, minHeight: 100 }} />
           {selectedPlan && (
             <Box mt={2}>
               <Typography variant="body2" color="text.secondary">
