@@ -163,6 +163,22 @@ const AnalyticsScreen: React.FC = () => {
     }
   };
 
+  // 중복 데이터 정리 핸들러
+  const handleCleanupDuplicates = async () => {
+    try {
+      const res = await dashboardService.cleanupDuplicates();
+      if (res.success) {
+        const deletedCount = (res.data as any)?.deletedCount || 0;
+        alert(`중복 데이터 정리 완료: ${deletedCount}건 삭제`);
+        // 데이터 새로고침
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('중복 데이터 정리 실패:', error);
+      alert('중복 데이터 정리에 실패했습니다.');
+    }
+  };
+
   const captchaTypeStats = [
     { name: '이미지 인식', value: 45, color: '#1976d2' },
     { name: '필기 인식', value: 35, color: '#dc004e' },
@@ -188,18 +204,28 @@ const AnalyticsScreen: React.FC = () => {
             캡차 서비스 사용 패턴 및 성능 분석
           </Typography>
         </Box>
-        <FormControl sx={{ minWidth: 150 }}>
-          <InputLabel>기간</InputLabel>
-          <Select
-            value={timePeriod}
-            label="기간"
-            onChange={handleTimePeriodChange}
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Button
+            variant="outlined"
+            color="warning"
+            onClick={handleCleanupDuplicates}
+            sx={{ minWidth: 120 }}
           >
-            <MenuItem value="7days">최근 7일</MenuItem>
-            <MenuItem value="30days">최근 30일</MenuItem>
-            <MenuItem value="90days">최근 90일</MenuItem>
-          </Select>
-        </FormControl>
+            중복 데이터 정리
+          </Button>
+          <FormControl sx={{ minWidth: 150 }}>
+            <InputLabel>기간</InputLabel>
+            <Select
+              value={timePeriod}
+              label="기간"
+              onChange={handleTimePeriodChange}
+            >
+              <MenuItem value="7days">최근 7일</MenuItem>
+              <MenuItem value="30days">최근 30일</MenuItem>
+              <MenuItem value="90days">최근 90일</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
 
       {/* 에러 상태 표시 */}

@@ -88,6 +88,18 @@ class DashboardService {
       throw error;
     }
   }
+
+  // 중복 데이터 정리
+  async cleanupDuplicates(): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.post<ApiResponse<any>>(
+        API_ENDPOINTS.DASHBOARD.CLEANUP_DUPLICATES
+      );
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const dashboardService = new DashboardService();

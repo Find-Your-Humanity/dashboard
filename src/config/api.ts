@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
     REALTIME: '/api/dashboard/realtime',
     USAGE_LIMITS: '/api/dashboard/usage-limits', // API 사용량 제한 조회
     API_KEY_USAGE: '/api/dashboard/api-key-usage', // API 키별 사용량 통계
+    CLEANUP_DUPLICATES: '/api/dashboard/cleanup-duplicates', // 중복 데이터 정리
   },
   USERS: {
     LIST: '/api/users',
