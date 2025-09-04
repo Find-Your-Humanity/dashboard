@@ -13,6 +13,8 @@ import {
   Alert,
   LinearProgress,
   Chip,
+  Tabs,
+  Tab,
   TextField,
   Button,
   Skeleton,
@@ -35,6 +37,7 @@ import AnalyticsChart from '../components/AnalyticsChart';
 const AnalyticsScreen: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('7days');
   const [apiType, setApiType] = useState<ApiType>('all');
+  const [tabValue, setTabValue] = useState(0); // 탭 네비게이션 상태
   const [statsData, setStatsData] = useState<CaptchaStats[]>([]);
   const [usageLimits, setUsageLimits] = useState<ApiUsageLimit | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -51,6 +54,13 @@ const AnalyticsScreen: React.FC = () => {
 
   const handleApiTypeChange = (event: SelectChangeEvent) => {
     setApiType(event.target.value as ApiType);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+    // 탭 인덱스를 API 타입으로 변환
+    const apiTypes: ApiType[] = ['all', 'handwriting', 'abstract', 'imagecaptcha'];
+    setApiType(apiTypes[newValue]);
   };
 
   // API 연동: 기간 변경 시 통계 조회
@@ -240,19 +250,6 @@ const AnalyticsScreen: React.FC = () => {
               <MenuItem value="7days">최근 7일</MenuItem>
               <MenuItem value="30days">최근 30일</MenuItem>
               <MenuItem value="90days">최근 90일</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl size="small" sx={{ minWidth: 140 }}>
-            <InputLabel>API 타입</InputLabel>
-            <Select
-              value={apiType}
-              onChange={handleApiTypeChange}
-              label="API 타입"
-            >
-              <MenuItem value="all">전체</MenuItem>
-              <MenuItem value="handwriting">필기 캡차</MenuItem>
-              <MenuItem value="abstract">추상 캡차</MenuItem>
-              <MenuItem value="imagecaptcha">이미지 캡차</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -455,12 +452,26 @@ const AnalyticsScreen: React.FC = () => {
 
         {/* 기간별 요청 현황 (API 연동) */}
         <Grid item xs={12}>
-          <AnalyticsChart 
-            data={chartData} 
-            loading={loading} 
-            timePeriod={timePeriod}
-            apiType={apiType}
-          />
+          <Card>
+            <CardContent>
+              {/* 탭 네비게이션 */}
+              <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+                <Tabs value={tabValue} onChange={handleTabChange}>
+                  <Tab label="전체 일별 요청 현황" />
+                  <Tab label="필기 캡차" />
+                  <Tab label="추상 캡차" />
+                  <Tab label="이미지 캡차" />
+                </Tabs>
+              </Box>
+              
+              <AnalyticsChart 
+                data={chartData} 
+                loading={loading} 
+                timePeriod={timePeriod}
+                apiType={apiType}
+              />
+            </CardContent>
+          </Card>
         </Grid>
 
 

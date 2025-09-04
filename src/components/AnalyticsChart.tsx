@@ -53,68 +53,45 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = React.memo(({ data, loadin
 
   if (loading) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            {getChartTitle()}
-          </Typography>
-          <Box sx={{ 
-            height: 400, 
-            mt: 2, 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center' 
-          }}>
-            <CircularProgress />
-          </Box>
-        </CardContent>
-      </Card>
+      <Box sx={{ 
+        height: 400, 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center' 
+      }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
   if (!data || data.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            {getChartTitle()}
-          </Typography>
-          <Box sx={{ 
-            height: 400, 
-            mt: 2, 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center' 
-          }}>
-            <Typography variant="body1" color="text.secondary">
-              데이터가 없습니다.
-            </Typography>
-          </Box>
-        </CardContent>
-      </Card>
+      <Box sx={{ 
+        height: 400, 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center' 
+      }}>
+        <Typography variant="body1" color="text.secondary">
+          데이터가 없습니다.
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          {getChartTitle()}
-        </Typography>
-        <Box sx={{ height: 400, mt: 2 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="success" fill="#2e7d32" name="성공" />
-              <Bar dataKey="failed" fill="#d32f2f" name="실패" />
-            </BarChart>
-          </ResponsiveContainer>
-        </Box>
-      </CardContent>
-    </Card>
+    <Box sx={{ height: 400 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="label" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="success" fill="#2e7d32" name="성공" />
+          <Bar dataKey="failed" fill="#d32f2f" name="실패" />
+        </BarChart>
+      </ResponsiveContainer>
+    </Box>
   );
 });
 
