@@ -25,6 +25,7 @@ export interface CaptchaStats {
   failedAttempts: number;
   successRate: number;
   averageResponseTime: number;
+  date?: string; // 날짜 정보 추가
 }
 
 // Dashboard Analytics Types

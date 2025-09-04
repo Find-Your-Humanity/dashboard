@@ -103,25 +103,27 @@ const AnalyticsScreen: React.FC = () => {
     };
   }, []);
 
-  // 차트용 가공 데이터 생성 (라벨은 기간에 따라 합성)
+  // 차트용 가공 데이터 생성 (실제 날짜 사용)
   const chartData = useMemo(() => {
-    const length = statsData.length;
-    const labels: string[] = [];
-    if (length === 7) {
-      // 최근 7일: D-6 ~ D-0
-      for (let i = length - 1; i >= 0; i--) labels.push(`D-${i}`);
-    } else if (length === 4) {
-      labels.push('W1', 'W2', 'W3', 'W4');
-    } else if (length === 3) {
-      labels.push('M1', 'M2', 'M3');
-    } else {
-      for (let i = 0; i < length; i++) labels.push(String(i + 1));
-    }
-    return statsData.map((s, idx) => ({
-      label: labels[idx] ?? `${idx + 1}`,
-      success: s.successfulSolves,
-      failed: s.failedAttempts,
-    }));
+    return statsData.map((s, idx) => {
+      // 실제 날짜를 사용하여 라벨 생성
+      let label = '';
+      if (s.date) {
+        const date = new Date(s.date);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        label = `${month}/${day}`;
+      } else {
+        // 날짜가 없는 경우 인덱스 기반으로 생성
+        label = `Day ${idx + 1}`;
+      }
+      
+      return {
+        label: label,
+        success: s.successfulSolves,
+        failed: s.failedAttempts,
+      };
+    });
   }, [statsData]);
 
   // 사용량 제한 상태에 따른 색상 반환
