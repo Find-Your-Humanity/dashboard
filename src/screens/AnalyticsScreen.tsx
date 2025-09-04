@@ -15,6 +15,7 @@ import {
   Chip,
   TextField,
   Button,
+  Skeleton,
 } from '@mui/material';
 import {
   BarChart,
@@ -28,6 +29,8 @@ import {
 import { formatNumber, formatPercentage } from '../utils';
 import { dashboardService } from '../services/dashboardService';
 import { CaptchaStats, ApiUsageLimit } from '../types';
+import AnalyticsSkeleton from '../components/AnalyticsSkeleton';
+import AnalyticsChart from '../components/AnalyticsChart';
 
 const AnalyticsScreen: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('7days');
@@ -199,16 +202,16 @@ const AnalyticsScreen: React.FC = () => {
         </FormControl>
       </Box>
 
-      {/* 로딩/에러 상태 표시 */}
+      {/* 에러 상태 표시 */}
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
+      
+      {/* 초기 로딩 시 스켈레톤 표시 */}
       {loading && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          데이터를 불러오는 중입니다...
-        </Alert>
+        <AnalyticsSkeleton />
       )}
 
       <Grid container spacing={3}>
@@ -396,25 +399,11 @@ const AnalyticsScreen: React.FC = () => {
 
         {/* 기간별 요청 현황 (API 연동) */}
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                {timePeriod === '7days' ? '일별 요청 현황' : timePeriod === '30days' ? '주간 요청 현황' : '월간 요청 현황'}
-              </Typography>
-              <Box sx={{ height: 400, mt: 2 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="label" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="success" fill="#2e7d32" name="성공" isAnimationActive={!loading} />
-                    <Bar dataKey="failed" fill="#d32f2f" name="실패" isAnimationActive={!loading} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
-            </CardContent>
-          </Card>
+          <AnalyticsChart 
+            data={chartData} 
+            loading={loading} 
+            timePeriod={timePeriod} 
+          />
         </Grid>
 
 
