@@ -28,12 +28,13 @@ import {
 } from 'recharts';
 import { formatNumber, formatPercentage } from '../utils';
 import { dashboardService } from '../services/dashboardService';
-import { CaptchaStats, ApiUsageLimit } from '../types';
+import { CaptchaStats, ApiUsageLimit, ApiType, PeriodType } from '../types';
 import AnalyticsSkeleton from '../components/AnalyticsSkeleton';
 import AnalyticsChart from '../components/AnalyticsChart';
 
 const AnalyticsScreen: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('7days');
+  const [apiType, setApiType] = useState<ApiType>('all');
   const [statsData, setStatsData] = useState<CaptchaStats[]>([]);
   const [usageLimits, setUsageLimits] = useState<ApiUsageLimit | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -48,15 +49,19 @@ const AnalyticsScreen: React.FC = () => {
     setTimePeriod(event.target.value);
   };
 
+  const handleApiTypeChange = (event: SelectChangeEvent) => {
+    setApiType(event.target.value as ApiType);
+  };
+
   // API 연동: 기간 변경 시 통계 조회
   useEffect(() => {
     const fetchStats = async () => {
       setLoading(true);
       setError('');
       try {
-        const period: 'daily' | 'weekly' | 'monthly' =
+        const period: PeriodType =
           timePeriod === '7days' ? 'daily' : timePeriod === '30days' ? 'weekly' : 'monthly';
-        const res = await dashboardService.getStats(period);
+        const res = await dashboardService.getStats(period, apiType);
         if (res.success) {
           setStatsData(res.data);
         } else {
@@ -71,7 +76,7 @@ const AnalyticsScreen: React.FC = () => {
       }
     };
     fetchStats();
-  }, [timePeriod]);
+  }, [timePeriod, apiType]);
 
   // API 사용량 제한 조회
   useEffect(() => {
@@ -109,10 +114,20 @@ const AnalyticsScreen: React.FC = () => {
       // 실제 날짜를 사용하여 라벨 생성
       let label = '';
       if (s.date) {
-        const date = new Date(s.date);
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        label = `${month}/${day}`;
+        // 백엔드에서 이미 포맷된 라벨을 받은 경우 그대로 사용
+        if (s.date.includes('/') || s.date.includes('-') || s.date.startsWith('W')) {
+          label = s.date;
+        } else {
+          // 날짜 문자열인 경우 파싱
+          const date = new Date(s.date);
+          if (!isNaN(date.getTime())) {
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            label = `${month}/${day}`;
+          } else {
+            label = s.date;
+          }
+        }
       } else {
         // 날짜가 없는 경우 인덱스 기반으로 생성
         label = `Day ${idx + 1}`;
@@ -225,6 +240,19 @@ const AnalyticsScreen: React.FC = () => {
               <MenuItem value="7days">최근 7일</MenuItem>
               <MenuItem value="30days">최근 30일</MenuItem>
               <MenuItem value="90days">최근 90일</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl size="small" sx={{ minWidth: 140 }}>
+            <InputLabel>API 타입</InputLabel>
+            <Select
+              value={apiType}
+              onChange={handleApiTypeChange}
+              label="API 타입"
+            >
+              <MenuItem value="all">전체</MenuItem>
+              <MenuItem value="handwriting">필기 캡차</MenuItem>
+              <MenuItem value="abstract">추상 캡차</MenuItem>
+              <MenuItem value="imagecaptcha">이미지 캡차</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -430,7 +458,8 @@ const AnalyticsScreen: React.FC = () => {
           <AnalyticsChart 
             data={chartData} 
             loading={loading} 
-            timePeriod={timePeriod} 
+            timePeriod={timePeriod}
+            apiType={apiType}
           />
         </Grid>
 

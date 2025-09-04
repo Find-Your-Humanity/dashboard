@@ -15,6 +15,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { ApiType } from '../types';
 
 interface ChartData {
   label: string;
@@ -26,15 +27,27 @@ interface AnalyticsChartProps {
   data: ChartData[];
   loading: boolean;
   timePeriod: string;
+  apiType: ApiType;
 }
 
-const AnalyticsChart: React.FC<AnalyticsChartProps> = React.memo(({ data, loading, timePeriod }) => {
+const AnalyticsChart: React.FC<AnalyticsChartProps> = React.memo(({ data, loading, timePeriod, apiType }) => {
+  const getApiTypeName = () => {
+    switch (apiType) {
+      case 'all': return '전체';
+      case 'handwriting': return '필기 캡차';
+      case 'abstract': return '추상 캡차';
+      case 'imagecaptcha': return '이미지 캡차';
+      default: return '전체';
+    }
+  };
+
   const getChartTitle = () => {
+    const apiName = getApiTypeName();
     switch (timePeriod) {
-      case '7days': return '일별 요청 현황';
-      case '30days': return '주간 요청 현황';
-      case '90days': return '월간 요청 현황';
-      default: return '요청 현황';
+      case '7days': return `${apiName} 일별 요청 현황`;
+      case '30days': return `${apiName} 주간 요청 현황`;
+      case '90days': return `${apiName} 월간 요청 현황`;
+      default: return `${apiName} 요청 현황`;
     }
   };
 

@@ -28,6 +28,10 @@ export interface CaptchaStats {
   date?: string; // 날짜 정보 추가
 }
 
+// API 타입 정의
+export type ApiType = "all" | "handwriting" | "abstract" | "imagecaptcha";
+export type PeriodType = "daily" | "weekly" | "monthly";
+
 // Dashboard Analytics Types
 export interface DashboardAnalytics {
   dailyStats: CaptchaStats[];
