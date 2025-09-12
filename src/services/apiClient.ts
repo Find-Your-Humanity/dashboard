@@ -39,18 +39,20 @@ apiClient.interceptors.response.use(
           {},
           { 
             withCredentials: true,
-            timeout: 5000 // 5초 타임아웃
+            timeout: 10000 // 10초 타임아웃으로 증가
           }
         );
         
-        if (refreshResp.data && (refreshResp.data.data?.access_token || refreshResp.data.access_token)) {
+        console.log('토큰 갱신 응답:', refreshResp.data);
+        
+        if (refreshResp.data && refreshResp.data.success) {
           // 서버가 쿠키를 갱신하므로 헤더/스토리지 조작 없이 재시도만 수행
           console.log('토큰 갱신 성공 (쿠키 기반)');
 
           // 원래 요청 재시도 (withCredentials 유지)
           return apiClient(originalRequest);
         } else {
-          throw new Error('토큰 갱신 응답에 access_token이 없습니다');
+          throw new Error('토큰 갱신 응답이 성공하지 않았습니다');
         }
       } catch (refreshError) {
         console.warn('토큰 갱신 실패:', refreshError);
@@ -59,6 +61,9 @@ apiClient.interceptors.response.use(
         try {
           localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
           localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+          
+          // 페이지 새로고침으로 로그인 페이지로 이동
+          window.location.reload();
         } catch (storageError) {
           console.warn('토큰 정리 실패:', storageError);
         }
